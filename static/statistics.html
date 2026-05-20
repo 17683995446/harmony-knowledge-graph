@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统计分析 - Harmony Knowledge Graph</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-project-diagram"></i>
+                <span>Harmony KG</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>首页</span>
+                </a>
+                <a href="/query" class="nav-item">
+                    <i class="fas fa-search"></i>
+                    <span>智能查询</span>
+                </a>
+                <a href="/graph" class="nav-item">
+                    <i class="fas fa-sitemap"></i>
+                    <span>代码图谱</span>
+                </a>
+                <a href="/statistics" class="nav-item active">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>统计分析</span>
+                </a>
+                <a href="/scan" class="nav-item">
+                    <i class="fas fa-sync"></i>
+                    <span>项目扫描</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="version">v1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <header class="header">
+                <h1>统计分析</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i>
+                        刷新
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportReport()">
+                        <i class="fas fa-download"></i>
+                        导出报告
+                    </button>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="query-container">
+                    <!-- 概览统计 -->
+                    <div class="status-cards" style="margin-bottom: 24px;">
+                        <div class="status-card">
+                            <div class="status-icon info">
+                                <i class="fas fa-file-code"></i>
+                            </div>
+                            <div class="status-info">
+                                <span class="status-label">文件总数</span>
+                                <span class="status-value" id="total-files">-</span>
+                            </div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-icon info">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                            <div class="status-info">
+                                <span class="status-label">实体总数</span>
+                                <span class="status-value" id="total-entities">-</span>
+                            </div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-icon info">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div class="status-info">
+                                <span class="status-label">调用关系</span>
+                                <span class="status-value" id="total-calls">-</span>
+                            </div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-icon info">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <div class="status-info">
+                                <span class="status-label">继承关系</span>
+                                <span class="status-value" id="total-inheritance">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 图表区域 -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                        <!-- 实体类型分布 -->
+                        <div class="results-section">
+                            <div class="results-header">
+                                <h3><i class="fas fa-chart-pie"></i> 实体类型分布</h3>
+                            </div>
+                            <div style="padding: 20px;">
+                                <canvas id="entityTypeChart" height="250"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- 文件大小分布 -->
+                        <div class="results-section">
+                            <div class="results-header">
+                                <h3><i class="fas fa-chart-bar"></i> 文件实体数量TOP10</h3>
+                            </div>
+                            <div style="padding: 20px;">
+                                <canvas id="fileSizeChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 问题分析 -->
+                    <div class="results-section" style="margin-bottom: 24px;">
+                        <div class="results-header">
+                            <h3><i class="fas fa-exclamation-triangle" style="color: var(--warning-color);"></i> 代码问题分析</h3>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                                <div class="status-card" style="cursor: pointer;" onclick="showUnusedEntities()">
+                                    <div class="status-icon" style="background-color: rgba(245, 158, 11, 0.2); color: var(--warning-color);">
+                                        <i class="fas fa-ghost"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <span class="status-label">未使用方法</span>
+                                        <span class="status-value" id="unused-count">-</span>
+                                    </div>
+                                </div>
+                                <div class="status-card" style="cursor: pointer;" onclick="showDuplicates()">
+                                    <div class="status-icon" style="background-color: rgba(239, 68, 68, 0.2); color: var(--danger-color);">
+                                        <i class="fas fa-clone"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <span class="status-label">重复名称</span>
+                                        <span class="status-value" id="duplicate-count">-</span>
+                                    </div>
+                                </div>
+                                <div class="status-card" style="cursor: pointer;" onclick="showComplexMethods()">
+                                    <div class="status-icon" style="background-color: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+                                        <i class="fas fa-code-branch"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <span class="status-label">复杂方法</span>
+                                        <span class="status-value" id="complex-count">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 详细列表 -->
+                    <div class="results-section" id="detail-section" style="display: none;">
+                        <div class="results-header">
+                            <h3 id="detail-title">详细列表</h3>
+                        </div>
+                        <div class="results-table-container" id="detail-content">
+                            <!-- 动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let entityTypeChart = null;
+        let fileSizeChart = null;
+
+        // 加载统计数据
+        async function loadStatistics() {
+            try {
+                // 加载概览统计
+                const overviewResponse = await fetch('/api/statistics/overview');
+                const overviewData = await overviewResponse.json();
+                
+                if (overviewData.success && overviewData.data.length > 0) {
+                    const stats = overviewData.data[0];
+                    document.getElementById('total-files').textContent = stats.total_files || 0;
+                    document.getElementById('total-entities').textContent = stats.total_entities || 0;
+                    document.getElementById('total-calls').textContent = stats.total_calls || 0;
+                    document.getElementById('total-inheritance').textContent = stats.total_inheritance || 0;
+                }
+
+                // 加载实体类型分布
+                const typeResponse = await fetch('/api/statistics/entity-types');
+                const typeData = await typeResponse.json();
+                
+                if (typeData.success) {
+                    renderEntityTypeChart(typeData.data);
+                }
+
+                // 加载文件实体数量TOP10
+                await loadFileTopChart();
+
+                // 加载问题统计
+                await loadIssueStats();
+
+            } catch (error) {
+                console.error('加载统计数据失败:', error);
+            }
+        }
+
+        // 加载文件实体数量TOP10
+        async function loadFileTopChart() {
+            try {
+                const response = await fetch('/api/query/sql', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sql: `SELECT f.path, COUNT(e.id) as entity_count FROM files f LEFT JOIN entities e ON f.id = e.file_id GROUP BY f.id ORDER BY entity_count DESC LIMIT 10`
+                    })
+                });
+                const data = await response.json();
+                if (data.success && data.data) {
+                    renderFileSizeChart(data.data);
+                }
+            } catch (error) {
+                console.error('加载文件TOP10失败:', error);
+            }
+        }
+
+        // 渲染文件实体数量TOP10图表
+        function renderFileSizeChart(data) {
+            const ctx = document.getElementById('fileSizeChart').getContext('2d');
+            
+            const labels = data.map(item => {
+                const parts = item.path.split('/');
+                return parts.length > 2 ? '.../' + parts.slice(-2).join('/') : item.path;
+            });
+            const values = data.map(item => item.entity_count);
+
+            if (fileSizeChart) {
+                fileSizeChart.destroy();
+            }
+
+            fileSizeChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '实体数量',
+                        data: values,
+                        backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        y: {
+                            ticks: { color: '#94a3b8', font: { size: 11 } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 渲染实体类型分布图表
+        function renderEntityTypeChart(data) {
+            const ctx = document.getElementById('entityTypeChart').getContext('2d');
+            
+            const labels = data.map(item => item.entity_type);
+            const values = data.map(item => item.count);
+            const colors = [
+                '#3b82f6', '#10b981', '#f59e0b', '#ef4444', 
+                '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'
+            ];
+
+            if (entityTypeChart) {
+                entityTypeChart.destroy();
+            }
+
+            entityTypeChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#94a3b8',
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 加载问题统计
+        async function loadIssueStats() {
+            try {
+                // 未使用方法
+                const unusedResponse = await fetch('/api/statistics/unused-entities');
+                const unusedData = await unusedResponse.json();
+                document.getElementById('unused-count').textContent = unusedData.row_count || 0;
+
+                // 重复名称
+                const duplicateResponse = await fetch('/api/statistics/duplicates');
+                const duplicateData = await duplicateResponse.json();
+                document.getElementById('duplicate-count').textContent = duplicateData.row_count || 0;
+
+                // 复杂方法
+                const complexResponse = await fetch('/api/statistics/complex-methods?min_lines=50');
+                const complexData = await complexResponse.json();
+                document.getElementById('complex-count').textContent = complexData.row_count || 0;
+
+            } catch (error) {
+                console.error('加载问题统计失败:', error);
+            }
+        }
+
+        // 显示未使用实体
+        async function showUnusedEntities() {
+            try {
+                const response = await fetch('/api/statistics/unused-entities');
+                const data = await response.json();
+                
+                document.getElementById('detail-title').innerHTML = '<i class="fas fa-ghost"></i> 未使用方法列表';
+                renderDetailTable(data);
+                document.getElementById('detail-section').style.display = 'block';
+            } catch (error) {
+                console.error('加载未使用实体失败:', error);
+            }
+        }
+
+        // 显示重复名称
+        async function showDuplicates() {
+            try {
+                const response = await fetch('/api/statistics/duplicates');
+                const data = await response.json();
+                
+                document.getElementById('detail-title').innerHTML = '<i class="fas fa-clone"></i> 重复名称列表';
+                renderDetailTable(data);
+                document.getElementById('detail-section').style.display = 'block';
+            } catch (error) {
+                console.error('加载重复名称失败:', error);
+            }
+        }
+
+        // 显示复杂方法
+        async function showComplexMethods() {
+            try {
+                const response = await fetch('/api/statistics/complex-methods?min_lines=50');
+                const data = await response.json();
+                
+                document.getElementById('detail-title').innerHTML = '<i class="fas fa-code-branch"></i> 复杂方法列表';
+                renderDetailTable(data);
+                document.getElementById('detail-section').style.display = 'block';
+            } catch (error) {
+                console.error('加载复杂方法失败:', error);
+            }
+        }
+
+        // 渲染详细表格
+        function renderDetailTable(data) {
+            const container = document.getElementById('detail-content');
+            
+            if (!data.success || data.data.length === 0) {
+                container.innerHTML = '<p style="padding: 20px; color: var(--text-secondary);">暂无数据</p>';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.className = 'results-table';
+
+            // 表头
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            data.columns.forEach(col => {
+                const th = document.createElement('th');
+                th.textContent = col;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // 表体
+            const tbody = document.createElement('tbody');
+            data.data.forEach(row => {
+                const tr = document.createElement('tr');
+                data.columns.forEach(col => {
+                    const td = document.createElement('td');
+                    let value = row[col];
+                    if (value === null || value === undefined) {
+                        value = '-';
+                    }
+                    td.textContent = value;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+
+            container.innerHTML = '';
+            container.appendChild(table);
+        }
+
+        // 刷新数据
+        function refreshData() {
+            loadStatistics();
+        }
+
+        // 导出报告
+        function exportReport() {
+            alert('报告导出功能开发中...');
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', loadStatistics);
+    </script>
+</body>
+</html>

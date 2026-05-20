@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码图谱 - Harmony Knowledge Graph</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/cytoscape@3.26.0/dist/cytoscape.min.js"></script>
+    <style>
+        #graph-container {
+            width: 100%;
+            height: 600px;
+            background-color: var(--bg-primary);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+        
+        .graph-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .graph-control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--bg-card);
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+        
+        .graph-control-group label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .graph-control-group select {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .graph-legend {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        
+        .entity-info {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .entity-info h4 {
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        
+        .info-value {
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-project-diagram"></i>
+                <span>Harmony KG</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>首页</span>
+                </a>
+                <a href="/query" class="nav-item">
+                    <i class="fas fa-search"></i>
+                    <span>智能查询</span>
+                </a>
+                <a href="/graph" class="nav-item active">
+                    <i class="fas fa-sitemap"></i>
+                    <span>代码图谱</span>
+                </a>
+                <a href="/statistics" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>统计分析</span>
+                </a>
+                <a href="/scan" class="nav-item">
+                    <i class="fas fa-sync"></i>
+                    <span>项目扫描</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="version">v1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <header class="header">
+                <h1>代码图谱</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="resetGraph()">
+                        <i class="fas fa-undo"></i>
+                        重置视图
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportGraph()">
+                        <i class="fas fa-download"></i>
+                        导出
+                    </button>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="query-container">
+                    <!-- 搜索栏 -->
+                    <div class="query-input-section">
+                        <div class="query-input-wrapper">
+                            <input 
+                                type="text" 
+                                class="query-input" 
+                                id="entity-search"
+                                placeholder="搜索实体名称..."
+                            >
+                            <button class="btn btn-primary" onclick="searchEntity()">
+                                <i class="fas fa-search"></i>
+                                搜索
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 图谱控制 -->
+                    <div class="graph-controls">
+                        <div class="graph-control-group">
+                            <label>图谱类型:</label>
+                            <select id="graph-type" onchange="changeGraphType()">
+                                <option value="dependency">依赖关系</option>
+                                <option value="inheritance">继承关系</option>
+                                <option value="call">调用关系</option>
+                                <option value="component">组件层次</option>
+                            </select>
+                        </div>
+                        <div class="graph-control-group">
+                            <label>布局:</label>
+                            <select id="layout-type" onchange="changeLayout()">
+                                <option value="cose">有机布局</option>
+                                <option value="circle">圆形布局</option>
+                                <option value="grid">网格布局</option>
+                                <option value="breadthfirst">层次布局</option>
+                            </select>
+                        </div>
+                        <div class="graph-control-group">
+                            <label>显示深度:</label>
+                            <select id="depth-level" onchange="changeDepth()">
+                                <option value="1">1层</option>
+                                <option value="2" selected>2层</option>
+                                <option value="3">3层</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 图谱容器 -->
+                    <div class="results-section">
+                        <div id="graph-container"></div>
+                    </div>
+
+                    <!-- 图例 -->
+                    <div class="graph-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #3b82f6;"></div>
+                            <span>类 (Class)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #10b981;"></div>
+                            <span>方法 (Method)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #f59e0b;"></div>
+                            <span>组件 (Component)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #8b5cf6;"></div>
+                            <span>接口 (Interface)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ef4444;"></div>
+                            <span>函数 (Function)</span>
+                        </div>
+                    </div>
+
+                    <!-- 实体详情 -->
+                    <div class="entity-info" id="entity-info" style="display: none;">
+                        <h4><i class="fas fa-info-circle"></i> 实体详情</h4>
+                        <div id="entity-details-content">
+                            <!-- 动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let cy = null;
+        let currentEntityId = null;
+
+        // 初始化图谱
+        function initGraph() {
+            cy = cytoscape({
+                container: document.getElementById('graph-container'),
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'background-color': '#3b82f6',
+                            'label': 'data(name)',
+                            'width': 40,
+                            'height': 40,
+                            'font-size': '12px',
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'color': '#fff',
+                            'text-outline-color': '#000',
+                            'text-outline-width': 1
+                        }
+                    },
+                    {
+                        selector: 'node[type="class"]',
+                        style: {
+                            'background-color': '#3b82f6',
+                            'shape': 'rectangle'
+                        }
+                    },
+                    {
+                        selector: 'node[type="method"]',
+                        style: {
+                            'background-color': '#10b981',
+                            'shape': 'ellipse'
+                        }
+                    },
+                    {
+                        selector: 'node[type="component"]',
+                        style: {
+                            'background-color': '#f59e0b',
+                            'shape': 'hexagon'
+                        }
+                    },
+                    {
+                        selector: 'node[type="interface"]',
+                        style: {
+                            'background-color': '#8b5cf6',
+                            'shape': 'diamond'
+                        }
+                    },
+                    {
+                        selector: 'node[type="function"]',
+                        style: {
+                            'background-color': '#ef4444',
+                            'shape': 'round-rectangle'
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 2,
+                            'line-color': '#64748b',
+                            'target-arrow-color': '#64748b',
+                            'target-arrow-shape': 'triangle',
+                            'curve-style': 'bezier',
+                            'label': 'data(label)',
+                            'font-size': '10px',
+                            'color': '#94a3b8'
+                        }
+                    },
+                    {
+                        selector: 'edge[type="calls"]',
+                        style: {
+                            'line-color': '#10b981',
+                            'target-arrow-color': '#10b981'
+                        }
+                    },
+                    {
+                        selector: 'edge[type="extends"]',
+                        style: {
+                            'line-color': '#f59e0b',
+                            'target-arrow-color': '#f59e0b',
+                            'line-style': 'dashed'
+                        }
+                    },
+                    {
+                        selector: ':selected',
+                        style: {
+                            'border-width': 3,
+                            'border-color': '#fff'
+                        }
+                    }
+                ],
+                layout: {
+                    name: 'cose',
+                    padding: 20,
+                    nodeOverlap: 20,
+                    refresh: 20,
+                    fit: true,
+                    randomize: false,
+                    componentSpacing: 100,
+                    nodeRepulsion: 400000,
+                    edgeElasticity: 100,
+                    nestingFactor: 5,
+                    gravity: 80,
+                    numIter: 1000,
+                    initialTemp: 200,
+                    coolingFactor: 0.95,
+                    minTemp: 1.0
+                }
+            });
+
+            // 点击事件
+            cy.on('tap', 'node', function(evt) {
+                const node = evt.target;
+                currentEntityId = node.id();
+                showEntityDetails(node.data());
+            });
+
+            // 加载示例数据
+            loadSampleData();
+        }
+
+        // 加载示例数据
+        function loadSampleData() {
+            // 这里应该调用API获取真实数据
+            const sampleElements = [
+                // 节点
+                { data: { id: '1', name: 'MainPage', type: 'component' } },
+                { data: { id: '2', name: 'HomeView', type: 'class' } },
+                { data: { id: '3', name: 'fetchData', type: 'method' } },
+                { data: { id: '4', name: 'render', type: 'method' } },
+                { data: { id: '5', name: 'IDataSource', type: 'interface' } },
+                { data: { id: '6', name: 'handleClick', type: 'function' } },
+                // 边
+                { data: { id: 'e1', source: '1', target: '2', label: 'contains', type: 'contains' } },
+                { data: { id: 'e2', source: '2', target: '3', label: 'calls', type: 'calls' } },
+                { data: { id: 'e3', source: '2', target: '4', label: 'calls', type: 'calls' } },
+                { data: { id: 'e4', source: '2', target: '5', label: 'implements', type: 'implements' } },
+                { data: { id: 'e5', source: '3', target: '6', label: 'calls', type: 'calls' } }
+            ];
+
+            cy.add(sampleElements);
+            cy.layout({ name: 'cose', padding: 20 }).run();
+        }
+
+        // 搜索实体
+        async function searchEntity() {
+            const searchTerm = document.getElementById('entity-search').value.trim();
+            if (!searchTerm) return;
+
+            try {
+                const response = await fetch(`/api/entities/search?q=${encodeURIComponent(searchTerm)}&limit=10`);
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    // 高亮搜索结果
+                    highlightEntities(data.data.map(e => e.id));
+                } else {
+                    alert('未找到匹配的实体');
+                }
+            } catch (error) {
+                console.error('搜索失败:', error);
+            }
+        }
+
+        // 高亮实体
+        function highlightEntities(entityIds) {
+            cy.nodes().forEach(node => {
+                if (entityIds.includes(parseInt(node.id()))) {
+                    node.select();
+                } else {
+                    node.unselect();
+                }
+            });
+        }
+
+        // 显示实体详情
+        function showEntityDetails(data) {
+            const container = document.getElementById('entity-details-content');
+            container.innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">ID</span>
+                    <span class="info-value">${data.id}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">名称</span>
+                    <span class="info-value">${data.name}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">类型</span>
+                    <span class="info-value">${data.type}</span>
+                </div>
+            `;
+            document.getElementById('entity-info').style.display = 'block';
+        }
+
+        // 切换图谱类型
+        function changeGraphType() {
+            const type = document.getElementById('graph-type').value;
+            // 重新加载对应类型的数据
+            loadGraphData(type);
+        }
+
+        // 切换布局
+        function changeLayout() {
+            const layoutName = document.getElementById('layout-type').value;
+            cy.layout({ 
+                name: layoutName,
+                padding: 20,
+                animate: true,
+                animationDuration: 500
+            }).run();
+        }
+
+        // 切换深度
+        function changeDepth() {
+            const depth = document.getElementById('depth-level').value;
+            // 根据深度重新加载数据
+            console.log('切换深度:', depth);
+        }
+
+        // 加载图谱数据
+        async function loadGraphData(type) {
+            try {
+                let endpoint = '/api/graph/dependency';
+                if (type === 'inheritance') endpoint = '/api/graph/inheritance';
+                else if (type === 'call') endpoint = '/api/graph/call';
+                else if (type === 'component') endpoint = '/api/graph/component';
+                
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // 将API数据转换为Cytoscape格式
+                    const elements = convertToCytoscape(data, type);
+                    if (elements.length > 0) {
+                        cy.elements().remove();
+                        cy.add(elements);
+                        cy.layout({ name: 'cose', padding: 20, animate: true }).run();
+                    } else {
+                        console.log('暂无图谱数据，显示示例数据');
+                    }
+                } else {
+                    console.warn('图谱数据加载失败:', data);
+                }
+            } catch (error) {
+                console.error('加载图谱数据失败:', error);
+            }
+        }
+
+        // 将API数据转换为Cytoscape元素格式
+        function convertToCytoscape(data, type) {
+            const elements = [];
+            const nodeMap = {};
+
+            function addNode(id, name, nodeType) {
+                if (!nodeMap[id]) {
+                    nodeMap[id] = true;
+                    elements.push({
+                        data: { id: String(id), name: name, type: nodeType }
+                    });
+                }
+            }
+
+            if (type === 'dependency' || type === 'call') {
+                const calls = data.calls || [];
+                calls.forEach(c => {
+                    const callerId = c.caller_id || c.caller;
+                    const calleeId = c.callee_id || c.callee;
+                    const callerName = c.caller_name || c.caller || ('Entity ' + callerId);
+                    const calleeName = c.callee_name || c.callee || ('Entity ' + calleeId);
+                    
+                    addNode(callerId, callerName, 'method');
+                    addNode(calleeId, calleeName, 'method');
+                    
+                    elements.push({
+                        data: {
+                            id: 'e_' + callerId + '_' + calleeId,
+                            source: String(callerId),
+                            target: String(calleeId),
+                            label: 'calls',
+                            type: 'calls'
+                        }
+                    });
+                });
+            } else if (type === 'inheritance') {
+                const relations = data.relations || data.inheritance_chain || [];
+                const subclasses = data.subclasses || [];
+                
+                relations.forEach(r => {
+                    const childId = r.child_id;
+                    const parentId = r.parent_id;
+                    const childName = r.child_name || ('Class ' + childId);
+                    const parentName = r.parent_name || ('Class ' + parentId);
+                    
+                    addNode(childId, childName, 'class');
+                    addNode(parentId, parentName, 'class');
+                    
+                    elements.push({
+                        data: {
+                            id: 'e_' + childId + '_' + parentId,
+                            source: String(childId),
+                            target: String(parentId),
+                            label: r.relation_type === 2 ? 'implements' : 'extends',
+                            type: 'extends'
+                        }
+                    });
+                });
+                
+                subclasses.forEach(s => {
+                    const childId = s.child_id;
+                    const parentId = s.parent_id;
+                    const childName = s.child_name || ('Class ' + childId);
+                    const parentName = s.parent_name || ('Class ' + parentId);
+                    
+                    addNode(childId, childName, 'class');
+                    addNode(parentId, parentName, 'class');
+                    
+                    elements.push({
+                        data: {
+                            id: 'e_' + childId + '_' + parentId,
+                            source: String(parentId),
+                            target: String(childId),
+                            label: 'extends',
+                            type: 'extends'
+                        }
+                    });
+                });
+            } else if (type === 'component') {
+                const relations = data.relations || [];
+                relations.forEach(r => {
+                    const parentId = r.parent_id;
+                    const childId = r.child_id;
+                    const parentName = r.parent_name || ('Component ' + parentId);
+                    const childName = r.child_name || ('Component ' + childId);
+                    
+                    addNode(parentId, parentName, 'component');
+                    addNode(childId, childName, 'component');
+                    
+                    elements.push({
+                        data: {
+                            id: 'e_' + parentId + '_' + childId,
+                            source: String(parentId),
+                            target: String(childId),
+                            label: 'contains',
+                            type: 'contains'
+                        }
+                    });
+                });
+            }
+
+            return elements;
+        }
+
+        // 重置视图
+        function resetGraph() {
+            cy.fit();
+            cy.center();
+        }
+
+        // 导出图谱
+        function exportGraph() {
+            const png = cy.png({
+                bg: 'transparent',
+                full: true
+            });
+            
+            const link = document.createElement('a');
+            link.download = 'code-graph.png';
+            link.href = png;
+            link.click();
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initGraph);
+    </script>
+</body>
+</html>

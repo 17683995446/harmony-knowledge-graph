@@ -1,0 +1,48 @@
+# Harmony Knowledge Graph - Docker Compose配置
+# 百万行级ArkTS代码知识图谱系统
+
+version: '3.8'
+
+services:
+  harmony-kg:
+    build: .
+    container_name: harmony-knowledge-graph
+    ports:
+      - "8080:8080"
+    volumes:
+      # 数据持久化
+      - ./data:/app/data
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+      # 挂载项目目录（可选）
+      - ./projects:/app/projects
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+      - DATABASE_PATH=/app/data/knowledge_graph.db
+      - CACHE_DIR=/app/cache
+      - LOG_LEVEL=INFO
+      # 硅基流动API配置（请修改为你的API密钥）
+      - SILICON_FLOW_API_KEY=${SILICON_FLOW_API_KEY:-sk-uqelhavcdhfxjzjesdenxpbtqombamjniazzjtbssmdcwdvg}
+      - SILICON_FLOW_MODEL=${SILICON_FLOW_MODEL:-Qwen2.5-7B-Instruct}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # 可选：使用Nginx作为反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: harmony-kg-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - harmony-kg
+    restart: unless-stopped
+    profiles:
+      - with-nginx

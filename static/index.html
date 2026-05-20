@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmony Knowledge Graph - 鸿蒙代码知识图谱</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-project-diagram"></i>
+                <span>Harmony KG</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>首页</span>
+                </a>
+                <a href="/query" class="nav-item">
+                    <i class="fas fa-search"></i>
+                    <span>智能查询</span>
+                </a>
+                <a href="/graph" class="nav-item">
+                    <i class="fas fa-sitemap"></i>
+                    <span>代码图谱</span>
+                </a>
+                <a href="/statistics" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>统计分析</span>
+                </a>
+                <a href="/scan" class="nav-item">
+                    <i class="fas fa-sync"></i>
+                    <span>项目扫描</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="version">v1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部栏 -->
+            <header class="header">
+                <h1>鸿蒙代码知识图谱</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="showHelp()">
+                        <i class="fas fa-question-circle"></i>
+                        帮助
+                    </button>
+                </div>
+            </header>
+
+            <!-- 内容区 -->
+            <div class="content">
+                <!-- 欢迎卡片 -->
+                <div class="welcome-card">
+                    <h2>欢迎使用 Harmony Knowledge Graph</h2>
+                    <p>百万行级ArkTS代码知识图谱系统，让AI用中文直接查询你的整个项目</p>
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <i class="fas fa-bolt"></i>
+                            <h3>极速解析</h3>
+                            <p>8分钟处理100万行代码</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-brain"></i>
+                            <h3>AI查询</h3>
+                            <p>自然语言转SQL查询</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-project-diagram"></i>
+                            <h3>可视化</h3>
+                            <p>交互式代码图谱</p>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-sync-alt"></i>
+                            <h3>增量更新</h3>
+                            <p>只处理变更文件</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 快捷操作 -->
+                <div class="quick-actions">
+                    <h3>快捷操作</h3>
+                    <div class="action-grid">
+                        <a href="/query" class="action-card">
+                            <i class="fas fa-search"></i>
+                            <span>开始查询</span>
+                        </a>
+                        <a href="/scan" class="action-card">
+                            <i class="fas fa-folder-open"></i>
+                            <span>扫描项目</span>
+                        </a>
+                        <a href="/graph" class="action-card">
+                            <i class="fas fa-eye"></i>
+                            <span>查看图谱</span>
+                        </a>
+                        <a href="/statistics" class="action-card">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>查看统计</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 系统状态 -->
+                <div class="status-section">
+                    <h3>系统状态</h3>
+                    <div class="status-cards">
+                        <div class="status-card">
+                            <div class="status-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="status-info">
+                                <span class="status-label">数据库状态</span>
+                                <span class="status-value" id="db-status">正常</span>
+                            </div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-icon info">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="status-info">
+                                <span class="status-label">已扫描文件</span>
+                                <span class="status-value" id="file-count">-</span>
+                            </div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-icon info">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                            <div class="status-info">
+                                <span class="status-label">实体数量</span>
+                                <span class="status-value" id="entity-count">-</span>
+                            </div>
+                        </div>
+                        <div class="status-card">
+                            <div class="status-icon info">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div class="status-info">
+                                <span class="status-label">关系数量</span>
+                                <span class="status-value" id="relation-count">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 使用指南 -->
+                <div class="guide-section">
+                    <h3>使用指南</h3>
+                    <div class="guide-steps">
+                        <div class="guide-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>扫描项目</h4>
+                                <p>在"项目扫描"页面选择您的鸿蒙项目目录，系统将自动解析所有ArkTS文件</p>
+                            </div>
+                        </div>
+                        <div class="guide-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>智能查询</h4>
+                                <p>在"智能查询"页面用中文描述您想查找的代码，AI会自动生成SQL查询</p>
+                            </div>
+                        </div>
+                        <div class="guide-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>可视化分析</h4>
+                                <p>在"代码图谱"页面查看代码结构、调用关系和依赖图</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 帮助弹窗 -->
+    <div class="modal" id="help-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>使用帮助</h3>
+                <button class="close-btn" onclick="closeHelp()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4>常见问题</h4>
+                <div class="faq-item">
+                    <h5>如何扫描项目？</h5>
+                    <p>点击左侧菜单"项目扫描"，输入项目路径后点击开始扫描。</p>
+                </div>
+                <div class="faq-item">
+                    <h5>如何查询代码？</h5>
+                    <p>点击"智能查询"，用中文描述你想查找的内容，例如"查找所有使用了@Entry装饰器的类"。</p>
+                </div>
+                <div class="faq-item">
+                    <h5>支持哪些查询？</h5>
+                    <p>支持类、方法、变量搜索，调用关系分析，继承链追踪，组件层次查看等。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // 加载系统状态
+        async function loadSystemStatus() {
+            try {
+                const response = await fetch('/api/statistics/overview');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('file-count').textContent = data.data[0]?.total_files || '0';
+                    document.getElementById('entity-count').textContent = data.data[0]?.total_entities || '0';
+                    document.getElementById('relation-count').textContent = 
+                        (data.data[0]?.total_calls || 0) + (data.data[0]?.total_inheritance || 0);
+                }
+            } catch (error) {
+                console.error('加载系统状态失败:', error);
+            }
+        }
+
+        // 显示帮助
+        function showHelp() {
+            document.getElementById('help-modal').style.display = 'flex';
+        }
+
+        // 关闭帮助
+        function closeHelp() {
+            document.getElementById('help-modal').style.display = 'none';
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', loadSystemStatus);
+    </script>
+</body>
+</html>

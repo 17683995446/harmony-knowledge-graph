@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目扫描 - Harmony Knowledge Graph</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-project-diagram"></i>
+                <span>Harmony KG</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>首页</span>
+                </a>
+                <a href="/query" class="nav-item">
+                    <i class="fas fa-search"></i>
+                    <span>智能查询</span>
+                </a>
+                <a href="/graph" class="nav-item">
+                    <i class="fas fa-sitemap"></i>
+                    <span>代码图谱</span>
+                </a>
+                <a href="/statistics" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>统计分析</span>
+                </a>
+                <a href="/scan" class="nav-item active">
+                    <i class="fas fa-sync"></i>
+                    <span>项目扫描</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="version">v1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <header class="header">
+                <h1>项目扫描</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="showHelp()">
+                        <i class="fas fa-question-circle"></i>
+                        帮助
+                    </button>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="query-container">
+                    <!-- 扫描配置 -->
+                    <div class="query-input-section">
+                        <h3 style="margin-bottom: 16px;">
+                            <i class="fas fa-cog" style="color: var(--primary-color);"></i>
+                            扫描配置
+                        </h3>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 14px;">
+                                项目路径
+                            </label>
+                            <div class="query-input-wrapper">
+                                <input 
+                                    type="text" 
+                                    class="query-input" 
+                                    id="project-path"
+                                    placeholder="输入鸿蒙项目目录的绝对路径，例如: /home/user/MyHarmonyProject"
+                                >
+                                <button class="btn btn-secondary" onclick="browsePath()">
+                                    <i class="fas fa-folder-open"></i>
+                                    浏览
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" id="incremental-scan" checked style="width: 18px; height: 18px;">
+                                <span>增量扫描（只处理变更的文件）</span>
+                            </label>
+                        </div>
+
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn btn-primary" onclick="startScan()" id="start-btn">
+                                <i class="fas fa-play"></i>
+                                开始扫描
+                            </button>
+                            <button class="btn btn-secondary" onclick="clearDatabase()">
+                                <i class="fas fa-trash"></i>
+                                清空数据库
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 扫描进度 -->
+                    <div class="results-section" id="progress-section" style="display: none; margin-bottom: 24px;">
+                        <div class="results-header">
+                            <h3><i class="fas fa-spinner fa-spin"></i> 扫描进度</h3>
+                            <span class="results-meta" id="progress-text">0%</span>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-bar" style="width: 0%;"></div>
+                            </div>
+                            <p style="margin-top: 12px; color: var(--text-secondary);" id="progress-message">
+                                准备扫描...
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 扫描结果 -->
+                    <div class="results-section" id="results-section" style="display: none;">
+                        <div class="results-header">
+                            <h3><i class="fas fa-check-circle" style="color: var(--success-color);"></i> 扫描完成</h3>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div class="status-cards" style="grid-template-columns: repeat(4, 1fr);">
+                                <div class="status-card">
+                                    <div class="status-icon info">
+                                        <i class="fas fa-file-code"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <span class="status-label">扫描文件</span>
+                                        <span class="status-value" id="scanned-files">0</span>
+                                    </div>
+                                </div>
+                                <div class="status-card">
+                                    <div class="status-icon info">
+                                        <i class="fas fa-cube"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <span class="status-label">解析实体</span>
+                                        <span class="status-value" id="parsed-entities">0</span>
+                                    </div>
+                                </div>
+                                <div class="status-card">
+                                    <div class="status-icon info">
+                                        <i class="fas fa-link"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <span class="status-label">发现关系</span>
+                                        <span class="status-value" id="found-relations">0</span>
+                                    </div>
+                                </div>
+                                <div class="status-card">
+                                    <div class="status-icon info">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <span class="status-label">耗时</span>
+                                        <span class="status-value" id="scan-duration">0s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 最近扫描记录 -->
+                    <div class="query-input-section">
+                        <h3 style="margin-bottom: 16px;">
+                            <i class="fas fa-history" style="color: var(--info-color);"></i>
+                            扫描历史
+                        </h3>
+                        <div id="scan-history">
+                            <p style="color: var(--text-secondary); text-align: center; padding: 20px;">
+                                暂无扫描记录
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 帮助弹窗 -->
+    <div class="modal" id="help-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>扫描帮助</h3>
+                <button class="close-btn" onclick="closeHelp()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="faq-item">
+                    <h5>什么是增量扫描？</h5>
+                    <p>增量扫描只处理自上次扫描以来发生变更的文件，可以大幅缩短扫描时间。首次扫描建议关闭此选项。</p>
+                </div>
+                <div class="faq-item">
+                    <h5>支持哪些文件类型？</h5>
+                    <p>目前支持.ets和.ts文件，这是鸿蒙ArkTS开发的主要文件类型。</p>
+                </div>
+                <div class="faq-item">
+                    <h5>扫描会修改我的代码吗？</h5>
+                    <p>不会。扫描过程是只读的，不会对你的项目代码做任何修改。</p>
+                </div>
+                <div class="faq-item">
+                    <h5>扫描需要多长时间？</h5>
+                    <p>取决于项目大小。10万行代码约需30秒，100万行代码约需8分钟。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        let scanInterval = null;
+
+        // 浏览路径（模拟）
+        function browsePath() {
+            // 在实际应用中，这里应该打开文件选择器
+            // 由于浏览器安全限制，这里使用prompt模拟
+            const path = prompt('请输入项目路径:', '/home/user/MyHarmonyProject');
+            if (path) {
+                document.getElementById('project-path').value = path;
+            }
+        }
+
+        // 开始扫描
+        async function startScan() {
+            const projectPath = document.getElementById('project-path').value.trim();
+            const incremental = document.getElementById('incremental-scan').checked;
+
+            if (!projectPath) {
+                alert('请输入项目路径');
+                return;
+            }
+
+            // 显示进度区域
+            document.getElementById('progress-section').style.display = 'block';
+            document.getElementById('results-section').style.display = 'none';
+
+            // 禁用开始按钮
+            const btn = document.getElementById('start-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> 扫描中...';
+
+            try {
+                const response = await fetch('/api/scan/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        project_path: projectPath,
+                        incremental: incremental
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 开始轮询进度
+                    startProgressPolling();
+                } else {
+                    alert('启动扫描失败: ' + data.message);
+                    resetUI();
+                }
+            } catch (error) {
+                console.error('启动扫描失败:', error);
+                alert('启动扫描失败，请检查网络连接');
+                resetUI();
+            }
+        }
+
+        // 轮询扫描进度
+        function startProgressPolling() {
+            scanInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/api/scan/status');
+                    const data = await response.json();
+
+                    // 更新进度条
+                    const progress = Math.round(data.progress * 100);
+                    document.getElementById('progress-bar').style.width = progress + '%';
+                    document.getElementById('progress-text').textContent = progress + '%';
+                    document.getElementById('progress-message').textContent = data.message;
+
+                    // 检查是否完成
+                    if (!data.is_scanning && data.progress >= 1) {
+                        clearInterval(scanInterval);
+                        showResults(data);
+                        resetUI();
+                    }
+                } catch (error) {
+                    console.error('获取进度失败:', error);
+                }
+            }, 1000);
+        }
+
+        // 显示扫描结果
+        function showResults(data) {
+            document.getElementById('results-section').style.display = 'block';
+            
+            // 使用真实的扫描统计数据
+            document.getElementById('scanned-files').textContent = 
+                (data.scanned_files || 0).toLocaleString();
+            document.getElementById('parsed-entities').textContent = 
+                (data.parsed_entities || 0).toLocaleString();
+            document.getElementById('found-relations').textContent = 
+                (data.found_relations || 0).toLocaleString();
+            document.getElementById('scan-duration').textContent = 
+                (data.duration || 0) + 's';
+
+            if (data.error) {
+                document.getElementById('progress-message').textContent = 
+                    '扫描完成（有错误）: ' + data.error;
+                document.getElementById('progress-message').style.color = 'var(--warning-color)';
+            }
+
+            // 添加到历史记录
+            addToHistory(data);
+        }
+
+        // 添加到历史记录
+        function addToHistory(data) {
+            const container = document.getElementById('scan-history');
+            const path = document.getElementById('project-path').value;
+            const time = new Date().toLocaleString();
+
+            const historyItem = document.createElement('div');
+            historyItem.className = 'info-row';
+            historyItem.innerHTML = `
+                <span class="info-value">${path}</span>
+                <span class="info-label">${time}</span>
+            `;
+
+            // 清除"暂无记录"提示
+            if (container.querySelector('p')) {
+                container.innerHTML = '';
+            }
+
+            container.insertBefore(historyItem, container.firstChild);
+        }
+
+        // 清空数据库
+        async function clearDatabase() {
+            if (!confirm('确定要清空数据库吗？这将删除所有已扫描的数据。')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/database/reset', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('数据库已清空');
+                    // 重置显示
+                    document.getElementById('results-section').style.display = 'none';
+                } else {
+                    alert('清空失败: ' + (data.detail || '未知错误'));
+                }
+            } catch (error) {
+                console.error('清空数据库失败:', error);
+                alert('清空数据库失败: ' + error.message);
+            }
+        }
+
+        // 重置UI
+        function resetUI() {
+            const btn = document.getElementById('start-btn');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-play"></i> 开始扫描';
+        }
+
+        // 显示帮助
+        function showHelp() {
+            document.getElementById('help-modal').style.display = 'flex';
+        }
+
+        // 关闭帮助
+        function closeHelp() {
+            document.getElementById('help-modal').style.display = 'none';
+        }
+
+        // 页面加载时检查扫描状态
+        async function checkScanStatus() {
+            try {
+                const response = await fetch('/api/scan/status');
+                const data = await response.json();
+
+                if (data.is_scanning) {
+                    document.getElementById('progress-section').style.display = 'block';
+                    startProgressPolling();
+                }
+            } catch (error) {
+                console.error('检查扫描状态失败:', error);
+            }
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', checkScanStatus);
+    </script>
+</body>
+</html>

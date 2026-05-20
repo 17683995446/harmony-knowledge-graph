@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能查询 - Harmony Knowledge Graph</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-project-diagram"></i>
+                <span>Harmony KG</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>首页</span>
+                </a>
+                <a href="/query" class="nav-item active">
+                    <i class="fas fa-search"></i>
+                    <span>智能查询</span>
+                </a>
+                <a href="/graph" class="nav-item">
+                    <i class="fas fa-sitemap"></i>
+                    <span>代码图谱</span>
+                </a>
+                <a href="/statistics" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>统计分析</span>
+                </a>
+                <a href="/scan" class="nav-item">
+                    <i class="fas fa-sync"></i>
+                    <span>项目扫描</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="version">v1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <header class="header">
+                <h1>智能查询</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="showHelp()">
+                        <i class="fas fa-question-circle"></i>
+                        帮助
+                    </button>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="query-container">
+                    <!-- 查询输入区 -->
+                    <div class="query-input-section">
+                        <h3 style="margin-bottom: 16px;">
+                            <i class="fas fa-robot" style="color: var(--primary-color);"></i>
+                            AI 智能查询
+                        </h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 16px;">
+                            用中文描述你想查找的代码，AI会自动生成SQL查询
+                        </p>
+                        
+                        <div class="query-input-wrapper">
+                            <input 
+                                type="text" 
+                                class="query-input" 
+                                id="query-input"
+                                placeholder="例如：查找所有使用了@Entry装饰器的类"
+                                onkeypress="handleKeyPress(event)"
+                            >
+                            <button class="btn btn-primary" onclick="executeQuery()">
+                                <i class="fas fa-search"></i>
+                                查询
+                            </button>
+                        </div>
+                        
+                        <div class="query-suggestions" id="query-suggestions">
+                            <span style="color: var(--text-secondary); font-size: 13px;">推荐查询：</span>
+                            <span class="suggestion-chip" onclick="setQuery('查找所有组件类')">查找所有组件类</span>
+                            <span class="suggestion-chip" onclick="setQuery('统计每个文件的实体数量')">统计每个文件的实体数量</span>
+                            <span class="suggestion-chip" onclick="setQuery('查找调用了fetchData的方法')">查找调用了fetchData的方法</span>
+                            <span class="suggestion-chip" onclick="setQuery('查找未使用的方法')">查找未使用的方法</span>
+                        </div>
+                    </div>
+
+                    <!-- 常用查询 -->
+                    <div class="query-input-section" style="margin-bottom: 24px;">
+                        <h3 style="margin-bottom: 16px;">
+                            <i class="fas fa-star" style="color: var(--warning-color);"></i>
+                            常用查询
+                        </h3>
+                        <div class="query-suggestions" id="common-queries">
+                            <!-- 动态加载 -->
+                        </div>
+                    </div>
+
+                    <!-- 生成的SQL -->
+                    <div class="results-section" id="sql-section" style="display: none; margin-bottom: 24px;">
+                        <div class="results-header">
+                            <h3><i class="fas fa-code"></i> 生成的SQL</h3>
+                            <button class="btn btn-secondary" onclick="copySQL()">
+                                <i class="fas fa-copy"></i>
+                                复制
+                            </button>
+                        </div>
+                        <div style="padding: 16px;">
+                            <pre class="code-block" id="generated-sql"></pre>
+                        </div>
+                    </div>
+
+                    <!-- 查询结果 -->
+                    <div class="results-section" id="results-section" style="display: none;">
+                        <div class="results-header">
+                            <h3><i class="fas fa-table"></i> 查询结果</h3>
+                            <span class="results-meta" id="results-meta"></span>
+                        </div>
+                        <div class="results-table-container" id="results-container">
+                            <!-- 动态加载结果表格 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 帮助弹窗 -->
+    <div class="modal" id="help-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>查询帮助</h3>
+                <button class="close-btn" onclick="closeHelp()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4>支持的查询类型</h4>
+                <div class="faq-item">
+                    <h5>实体搜索</h5>
+                    <p>查找类、方法、变量等代码实体。例如："查找所有名为MainPage的类"</p>
+                </div>
+                <div class="faq-item">
+                    <h5>关系分析</h5>
+                    <p>分析调用关系、继承关系。例如："查找调用了fetchData的所有方法"</p>
+                </div>
+                <div class="faq-item">
+                    <h5>统计分析</h5>
+                    <p>统计代码量和复杂度。例如："统计每个文件的实体数量"</p>
+                </div>
+                <div class="faq-item">
+                    <h5>组件分析</h5>
+                    <p>分析ArkUI组件。例如："查找所有使用了@Entry装饰器的类"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // 加载常用查询
+        async function loadCommonQueries() {
+            try {
+                const response = await fetch('/api/query/common');
+                const queries = await response.json();
+                
+                const container = document.getElementById('common-queries');
+                container.innerHTML = '<span style="color: var(--text-secondary); font-size: 13px;">常用查询：</span>';
+                
+                queries.slice(0, 6).forEach(query => {
+                    const chip = document.createElement('span');
+                    chip.className = 'suggestion-chip';
+                    chip.textContent = query.name;
+                    chip.title = query.description;
+                    chip.onclick = () => executeDirectSQL(query.sql);
+                    container.appendChild(chip);
+                });
+            } catch (error) {
+                console.error('加载常用查询失败:', error);
+            }
+        }
+
+        // 设置查询文本
+        function setQuery(text) {
+            document.getElementById('query-input').value = text;
+            document.getElementById('query-input').focus();
+        }
+
+        // 处理回车键
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                executeQuery();
+            }
+        }
+
+        // 执行自然语言查询
+        async function executeQuery() {
+            const input = document.getElementById('query-input');
+            const question = input.value.trim();
+            
+            if (!question) {
+                alert('请输入查询内容');
+                return;
+            }
+
+            // 显示加载状态
+            const btn = document.querySelector('.query-input-wrapper .btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading"></span> 查询中...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/query/natural-language', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        question: question,
+                        use_cache: true
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 显示生成的SQL
+                    document.getElementById('generated-sql').textContent = data.generated_sql;
+                    document.getElementById('sql-section').style.display = 'block';
+
+                    // 显示结果
+                    displayResults(data.results);
+                } else {
+                    alert('查询失败: ' + (data.error || '未知错误'));
+                }
+            } catch (error) {
+                console.error('查询失败:', error);
+                alert('查询失败，请检查网络连接');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // 直接执行SQL
+        async function executeDirectSQL(sql) {
+            document.getElementById('generated-sql').textContent = sql;
+            document.getElementById('sql-section').style.display = 'block';
+
+            try {
+                const response = await fetch('/api/query/sql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sql: sql,
+                        parameters: []
+                    })
+                });
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error('执行SQL失败:', error);
+                alert('执行失败，请检查网络连接');
+            }
+        }
+
+        // 显示查询结果
+        function displayResults(results) {
+            const container = document.getElementById('results-container');
+            const meta = document.getElementById('results-meta');
+            const section = document.getElementById('results-section');
+
+            if (!results.success) {
+                container.innerHTML = `<p style="color: var(--danger-color); padding: 20px;">查询失败: ${results.error_message}</p>`;
+                section.style.display = 'block';
+                return;
+            }
+
+            // 更新元信息
+            meta.textContent = `共 ${results.row_count} 条结果 | 耗时 ${results.execution_time_ms}ms`;
+
+            // 创建表格
+            if (results.data.length === 0) {
+                container.innerHTML = '<p style="padding: 20px; color: var(--text-secondary);">暂无结果</p>';
+            } else {
+                const table = document.createElement('table');
+                table.className = 'results-table';
+
+                // 表头
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                results.columns.forEach(col => {
+                    const th = document.createElement('th');
+                    th.textContent = col;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                // 表体
+                const tbody = document.createElement('tbody');
+                results.data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    results.columns.forEach(col => {
+                        const td = document.createElement('td');
+                        let value = row[col];
+                        
+                        // 格式化显示
+                        if (value === null || value === undefined) {
+                            value = '-';
+                        } else if (typeof value === 'object') {
+                            value = JSON.stringify(value);
+                        }
+                        
+                        td.textContent = value;
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+                table.appendChild(tbody);
+
+                container.innerHTML = '';
+                container.appendChild(table);
+            }
+
+            section.style.display = 'block';
+        }
+
+        // 复制SQL
+        function copySQL() {
+            const sql = document.getElementById('generated-sql').textContent;
+            navigator.clipboard.writeText(sql).then(() => {
+                alert('SQL已复制到剪贴板');
+            });
+        }
+
+        // 显示帮助
+        function showHelp() {
+            document.getElementById('help-modal').style.display = 'flex';
+        }
+
+        // 关闭帮助
+        function closeHelp() {
+            document.getElementById('help-modal').style.display = 'none';
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', loadCommonQueries);
+    </script>
+</body>
+</html>
