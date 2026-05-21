@@ -4,6 +4,7 @@ Configuration Manager - 配置管理器
 """
 
 import os
+import threading
 from pathlib import Path
 from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -92,12 +93,15 @@ class ApplicationConfig(BaseSettings):
 
 # 延迟初始化，避免导入时副作用
 _config_instance: Optional[ApplicationConfig] = None
+_config_lock = threading.Lock()
 
 
 def get_configuration() -> ApplicationConfig:
     """获取配置实例（延迟初始化）"""
     global _config_instance
     if _config_instance is None:
-        _config_instance = ApplicationConfig()
-        _config_instance.ensure_directories()
+        with _config_lock:
+            if _config_instance is None:
+                _config_instance = ApplicationConfig()
+                _config_instance.ensure_directories()
     return _config_instance

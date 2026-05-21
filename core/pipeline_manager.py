@@ -18,6 +18,7 @@ from parsers.ast_analyzer import ASTAnalyzer
 from database.connection_pool import get_database_manager
 from database.entity_repository import EntityRepository
 from database.relation_repository import RelationRepository
+from utils.trace_logger import trace_call, trace_line, TraceContext
 
 logger = get_logger("pipeline_manager")
 
@@ -43,245 +44,242 @@ class PipelineManager:
         max_workers: Optional[int] = None,
         batch_size: int = 1000
     ):
+        trace_line(f"PipelineManager.__init__ START: project_path={project_path}", "info")
         self.project_path = Path(project_path).resolve()
         self.max_workers = max_workers
         self.batch_size = batch_size
         self.config = get_configuration()
+        trace_line(f"PipelineManager.__init__ END: config loaded", "info")
 
         # 初始化组件
-        self.file_scanner = FileScanner(
-            project_path=str(self.project_path),
-            max_workers=max_workers or self.config.parser_max_workers
+        trace_line("Initializing components...", "debug")
+        self.file_scanner = FileScanner(str(self.project_path))
+        trace_line("FileScanner initialized", "debug")
+        
+        self.parallel_processor = ParallelProcessor(
+            max_workers=self.max_workers,
+            show_progress=True
         )
-        self.arkts_parser = ArkTSParser()
+        trace_line("ParallelProcessor initialized", "debug")
+        
         self.ast_analyzer = ASTAnalyzer()
-
-        # 数据库组件
+        trace_line("ASTAnalyzer initialized", "debug")
+        
         self.entity_repo = EntityRepository()
+        trace_line("EntityRepository initialized", "debug")
+        
         self.relation_repo = RelationRepository()
+        trace_line("RelationRepository initialized", "debug")
+        
+        trace_line("PipelineManager.__init__ COMPLETE", "info")
 
-    def run_full_pipeline(self, incremental: bool = True) -> PipelineResult:
-        """
-        运行完整流水线
-
-        Args:
-            incremental: 是否使用增量扫描
-
-        Returns:
-            PipelineResult: 流水线执行结果
-        """
+    @trace_call
+    def run_full_pipeline(self, incremental: bool = False) -> PipelineResult:
+        """运行完整流水线"""
+        trace_line(f"run_full_pipeline START: incremental={incremental}", "info")
         start_time = time.time()
+        stages = {}
 
         try:
             # 阶段1: 扫描文件
-            logger.info("阶段1: 扫描文件...")
-            file_infos = self._scan_files(incremental)
+            trace_line("STAGE 1: File scanning", "info")
+            with TraceContext("file_scanning"):
+                file_infos = self._scan_files()
+            stages['scan'] = {'files': len(file_infos)}
+            trace_line(f"STAGE 1 COMPLETE: {len(file_infos)} files found", "info")
 
             if not file_infos:
-                logger.info("没有需要处理的文件")
+                trace_line("No files found, returning early", "warning")
                 return PipelineResult(
                     success=True,
                     scanned_files=0,
-                    duration=time.time() - start_time
+                    duration=time.time() - start_time,
+                    stages=stages
                 )
 
-            # 阶段2: 解析代码
-            logger.info("阶段2: 解析代码...")
-            parse_results = self._parse_files(file_infos)
+            # 阶段2: 解析文件
+            trace_line("STAGE 2: File parsing", "info")
+            with TraceContext("file_parsing"):
+                parse_results = self._parse_files(file_infos)
+            total_entities = sum(len(r.entities) for r in parse_results)
+            stages['parse'] = {'files': len(parse_results), 'entities': total_entities}
+            trace_line(f"STAGE 2 COMPLETE: {len(parse_results)} files parsed, {total_entities} entities", "info")
 
-            # 阶段3: 分析AST
-            logger.info("阶段3: 分析AST...")
-            analysis_result = self._analyze_ast(parse_results)
+            # 阶段3: 存储文件
+            trace_line("STAGE 3: File storage", "info")
+            with TraceContext("file_storage"):
+                self._store_files(file_infos, incremental)
+            stages['store_files'] = {'files': len(file_infos)}
+            trace_line(f"STAGE 3 COMPLETE: {len(file_infos)} files stored", "info")
 
-            # 阶段4: 存储到数据库
-            logger.info("阶段4: 存储到数据库...")
-            storage_stats = self._store_to_database(file_infos, parse_results)
+            # 阶段4: 存储实体（带事务）
+            trace_line("STAGE 4: Entity storage", "info")
+            with TraceContext("entity_storage"):
+                stored_entities = self._store_entities(parse_results)
+            stages['store_entities'] = {'entities': stored_entities}
+            trace_line(f"STAGE 4 COMPLETE: {stored_entities} entities stored", "info")
+
+            # 阶段5: 存储关系
+            trace_line("STAGE 5: Relation storage", "info")
+            with TraceContext("relation_storage"):
+                stored_relations = self._store_relations(parse_results)
+            stages['store_relations'] = {'relations': stored_relations}
+            trace_line(f"STAGE 5 COMPLETE: {stored_relations} relations stored", "info")
+
+            # 阶段6: AST分析
+            trace_line("STAGE 6: AST analysis", "info")
+            with TraceContext("ast_analysis"):
+                analysis = self.ast_analyzer.analyze_results(parse_results)
+            stages['analysis'] = analysis
+            trace_line(f"STAGE 6 COMPLETE: analysis done", "info")
 
             duration = time.time() - start_time
-
-            logger.info(f"流水线完成! 耗时: {duration:.2f}秒")
+            trace_line(f"run_full_pipeline COMPLETE: success=True, duration={duration:.2f}s", "info")
 
             return PipelineResult(
                 success=True,
                 scanned_files=len(file_infos),
-                parsed_entities=storage_stats.get("entities", 0),
-                found_relations=storage_stats.get("relations", 0),
+                parsed_entities=stored_entities,
+                found_relations=stored_relations,
                 duration=duration,
-                stages={
-                    "files_scanned": len(file_infos),
-                    "entities_parsed": sum(len(r.entities) for r in parse_results),
-                    "analysis": analysis_result
-                }
+                stages=stages
             )
 
         except Exception as e:
-            logger.error(f"流水线执行失败: {e}", exc_info=True)
+            duration = time.time() - start_time
+            trace_line(f"run_full_pipeline FAILED: {type(e).__name__}: {str(e)}", "error")
+            logger.error(f"Pipeline failed: {e}")
             return PipelineResult(
                 success=False,
                 error=str(e),
-                duration=time.time() - start_time
+                duration=duration,
+                stages=stages
             )
 
-    def _scan_files(self, incremental: bool) -> List[FileInfo]:
+    @trace_call
+    def _scan_files(self) -> List[FileInfo]:
         """扫描文件"""
-        if incremental:
-            # 获取已存在的文件哈希
-            existing_files = self._get_existing_file_hashes()
-            file_infos, deleted_files = self.file_scanner.scan_incremental(existing_files)
+        trace_line("_scan_files START", "debug")
+        files = self.file_scanner.scan()
+        trace_line(f"_scan_files END: {len(files)} files", "debug")
+        return files
 
-            # 删除已不存在的文件记录
-            for file_path in deleted_files:
-                self._delete_file_data(file_path)
-
-            return file_infos
-        else:
-            return self.file_scanner.scan()
-
-    def _get_existing_file_hashes(self) -> Dict[str, str]:
-        """获取已存在的文件哈希"""
-        from database.connection_pool import get_database_manager
-
-        db_manager = get_database_manager()
-        rows = db_manager.fetch_all("SELECT path, hash FROM files")
-
-        return {row["path"]: row["hash"] for row in rows if row["hash"]}
-
-    def _delete_file_data(self, file_path: str) -> None:
-        """删除文件相关数据"""
-        from database.connection_pool import get_database_manager
-
-        db_manager = get_database_manager()
-
-        # 获取文件ID
-        row = db_manager.fetch_one("SELECT id FROM files WHERE path = ?", (file_path,))
-        if row:
-            file_id = row["id"]
-
-            # 删除关系
-            self.relation_repo.delete_relations_by_file(file_id)
-
-            # 删除实体
-            self.entity_repo.delete_entities_by_file(file_id)
-
-            # 删除文件记录
-            db_manager.execute_write("DELETE FROM files WHERE id = ?", (file_id,))
-
-            logger.debug(f"删除文件数据: {file_path}")
-
+    @trace_call
     def _parse_files(self, file_infos: List[FileInfo]) -> List[ParseResult]:
         """解析文件"""
-        file_paths = [f.path for f in file_infos]
+        trace_line(f"_parse_files START: {len(file_infos)} files to parse", "debug")
+        
+        def parse_single(file_info: FileInfo) -> ParseResult:
+            trace_line(f"Parsing file: {file_info.path}", "debug")
+            local_parser = ArkTSParser()  # Each thread gets its own parser
+            result = local_parser.parse_file(file_info.path)
+            trace_line(f"Parsed file: {file_info.path}, {len(result.entities)} entities", "debug")
+            return result
 
-        # 使用并行处理器
-        processor = ParallelProcessor(
-            max_workers=self.max_workers,
-            chunk_size=100,
-            show_progress=True
+        results = self.parallel_processor.process_items(
+            file_infos,
+            parse_single,
+            error_handler=lambda item, e: trace_line(f"Failed to parse {item.path}: {e}", "error")
         )
 
-        def parse_single_file(file_path: str) -> ParseResult:
-            return self.arkts_parser.parse_file(file_path)
+        successful = [r.data for r in results if r.success and r.data]
+        trace_line(f"_parse_files END: {len(successful)}/{len(file_infos)} files parsed successfully", "debug")
+        return successful
 
-        results = processor.process_items(file_paths, parse_single_file)
-
-        # 提取成功的结果
-        parse_results = []
-        for result in results:
-            if result.success and result.data:
-                parse_results.append(result.data)
-
-        logger.info(f"解析完成: {len(parse_results)}/{len(file_paths)} 个文件")
-
-        return parse_results
-
-    def _analyze_ast(self, parse_results: List[ParseResult]) -> Dict:
-        """分析AST"""
-        return self.ast_analyzer.analyze_results(parse_results)
-
-    def _store_to_database(
-        self,
-        file_infos: List[FileInfo],
-        parse_results: List[ParseResult]
-    ) -> Dict[str, int]:
-        """存储到数据库"""
-        stats = {"files": 0, "entities": 0, "relations": 0}
-
-        # 存储文件信息
-        self._store_files(file_infos)
-        stats["files"] = len(file_infos)
-
-        # 存储实体
-        entity_count = self._store_entities(parse_results)
-        stats["entities"] = entity_count
-
-        # 存储关系
-        relation_count = self._store_relations(parse_results)
-        stats["relations"] = relation_count
-
-        return stats
-
-    def _store_files(self, file_infos: List[FileInfo]) -> None:
-        """存储文件信息（线程安全）"""
-        from database.connection_pool import get_database_manager
-        import threading
+    @trace_call
+    def _store_files(self, file_infos: List[FileInfo], incremental: bool) -> None:
+        """存储文件信息"""
+        trace_line(f"_store_files START: {len(file_infos)} files, incremental={incremental}", "debug")
 
         db_manager = get_database_manager()
-        
-        # 使用线程锁确保并发安全
-        if not hasattr(self, '_file_store_lock'):
-            self._file_store_lock = threading.Lock()
+        trace_line(f"Got database manager", "debug")
 
-        with self._file_store_lock:
-            for file_info in file_infos:
-                # 使用INSERT OR REPLACE避免并发冲突
-                db_manager.execute_write(
-                    """
-                    INSERT OR REPLACE INTO files (path, hash, size, modified_time, parsed_at)
-                    VALUES (?, ?, ?, ?, ?)
-                    """,
-                    (
-                        file_info.relative_path,
-                        file_info.content_hash,
-                        file_info.size,
-                        file_info.modified_time,
-                        time.time()
-                    )
-                )
+        with db_manager.get_pool().connection() as conn:
+            try:
+                conn.execute("BEGIN")
 
-    def _resolve_relative_path(self, file_path: str) -> str:
-        """将绝对文件路径转换为项目相对路径"""
-        prefix = str(self.project_path) + os.sep
-        if file_path.startswith(prefix):
-            return file_path[len(prefix):]
-        return file_path
+                stored = 0
+                skipped = 0
 
+                for file_info in file_infos:
+                    relative_path = self._resolve_relative_path(file_info.path)
+                    trace_line(f"Processing file: {relative_path}", "debug")
+
+                    # 检查是否已存在
+                    existing = conn.execute(
+                        "SELECT id, hash FROM files WHERE path = ?",
+                        (relative_path,)
+                    ).fetchone()
+
+                    if existing:
+                        if incremental and existing["hash"] == file_info.content_hash:
+                            trace_line(f"File unchanged, skipping: {relative_path}", "debug")
+                            skipped += 1
+                            continue
+                        else:
+                            trace_line(f"File changed, updating: {relative_path}", "debug")
+                            conn.execute(
+                                "UPDATE files SET hash = ?, size = ?, modified_time = ? WHERE id = ?",
+                                (file_info.content_hash, file_info.size, file_info.modified_time, existing["id"])
+                            )
+                            stored += 1
+                    else:
+                        trace_line(f"New file, inserting: {relative_path}", "debug")
+                        conn.execute(
+                            "INSERT INTO files (path, hash, size, modified_time) VALUES (?, ?, ?, ?)",
+                            (relative_path, file_info.content_hash, file_info.size, file_info.modified_time)
+                        )
+                        stored += 1
+
+                conn.commit()
+                trace_line(f"_store_files END: {stored} stored, {skipped} skipped", "debug")
+
+            except Exception:
+                conn.rollback()
+                raise
+
+    @trace_call
     def _store_entities(self, parse_results: List[ParseResult]) -> int:
         """存储实体（带事务保证原子性）"""
+        trace_line(f"_store_entities START: {len(parse_results)} parse results", "debug")
+        
         from database.connection_pool import get_database_manager
-
         db_manager = get_database_manager()
+        trace_line(f"Got database manager", "debug")
+        
         total_entities = 0
 
         for result in parse_results:
-            # 获取文件ID
             relative_path = self._resolve_relative_path(result.file_path)
+            trace_line(f"Processing entities for: {relative_path}", "debug")
+            
             file_row = db_manager.fetch_one(
                 "SELECT id FROM files WHERE path = ?",
                 (relative_path,)
             )
 
             if not file_row:
+                trace_line(f"File not found in DB, skipping: {relative_path}", "warning")
                 continue
 
             file_id = file_row["id"]
+            trace_line(f"File ID: {file_id}", "debug")
 
-            # 使用显式事务包裹删除+插入操作，保证原子性
+            # 准备实体数据
+            entities_to_insert = []
+            for entity in result.entities:
+                entities_to_insert.append((entity, file_id))
+            
+            trace_line(f"Prepared {len(entities_to_insert)} entities for insertion", "debug")
+
+            # 使用显式事务
             with db_manager.get_pool().connection() as conn:
                 try:
-                    # 开始事务
+                    trace_line("BEGIN transaction", "debug")
                     conn.execute("BEGIN")
                     
-                    # 删除旧实体及相关数据
+                    # 删除旧实体
+                    trace_line(f"Deleting old entities for file_id={file_id}", "debug")
                     conn.execute(
                         "DELETE FROM method_params WHERE method_id IN (SELECT id FROM entities WHERE file_id = ?)",
                         (file_id,)
@@ -290,68 +288,76 @@ class PipelineManager:
                         "DELETE FROM decorators WHERE entity_id IN (SELECT id FROM entities WHERE file_id = ?)",
                         (file_id,)
                     )
-                    conn.execute("DELETE FROM entities WHERE file_id = ?", (file_id,))
+                    deleted = conn.execute("DELETE FROM entities WHERE file_id = ?", (file_id,)).rowcount
+                    trace_line(f"Deleted {deleted} old entities", "debug")
                     
-                    # 准备并插入新实体
-                    entities_to_insert = []
-                    for entity in result.entities:
-                        entities_to_insert.append((entity, file_id))
+                    # 确保名称存在
+                    trace_line("Ensuring names exist", "debug")
+                    all_names = set()
+                    for entity, _ in entities_to_insert:
+                        all_names.add(entity.name)
+                        if entity.extends:
+                            all_names.add(entity.extends)
+                        if entity.implements:
+                            all_names.update(entity.implements)
+                        for call in entity.calls:
+                            all_names.add(call)
                     
-                    if entities_to_insert:
-                        # 确保名称存在
-                        all_names = set()
-                        for entity, _ in entities_to_insert:
-                            all_names.add(entity.name)
-                            if entity.extends:
-                                all_names.add(entity.extends)
-                            if entity.implements:
-                                all_names.update(entity.implements)
-                            for call in entity.calls:
-                                all_names.add(call)
+                    trace_line(f"Total unique names: {len(all_names)}", "debug")
+                    
+                    for name in all_names:
+                        if name:
+                            conn.execute(
+                                "INSERT OR IGNORE INTO names (name, hash) VALUES (?, ?)",
+                                (name, 0)
+                            )
+                    
+                    # 插入实体
+                    trace_line(f"Inserting {len(entities_to_insert)} entities", "debug")
+                    for entity, fid in entities_to_insert:
+                        name_row = conn.execute("SELECT id FROM names WHERE name = ?", (entity.name,)).fetchone()
+                        type_row = conn.execute("SELECT id FROM entity_types WHERE name = ?", (entity.entity_type.value,)).fetchone()
                         
-                        for name in all_names:
-                            if name:
-                                conn.execute(
-                                    "INSERT OR IGNORE INTO names (name, hash) VALUES (?, ?)",
-                                    (name, 0)
-                                )
-                        
-                        # 插入实体
-                        for entity, fid in entities_to_insert:
-                            name_row = conn.execute("SELECT id FROM names WHERE name = ?", (entity.name,)).fetchone()
-                            type_row = conn.execute("SELECT id FROM entity_types WHERE name = ?", (entity.entity_type.value,)).fetchone()
-                            
-                            if name_row and type_row:
-                                cursor = conn.execute(
-                                    """INSERT INTO entities 
-                                        (name_id, type_id, file_id, line_start, line_end, column_start, column_end, documentation)
-                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-                                    (name_row[0], type_row[0], fid, entity.location.line,
-                                     entity.location.end_line or entity.location.line,
-                                     entity.location.column, entity.location.end_column or entity.location.column,
-                                     entity.documentation)
-                                )
-                                total_entities += 1
+                        if name_row and type_row:
+                            cursor = conn.execute(
+                                """INSERT INTO entities 
+                                    (name_id, type_id, file_id, line_start, line_end, column_start, column_end, documentation)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                                (name_row[0], type_row[0], fid, entity.location.line,
+                                 entity.location.end_line or entity.location.line,
+                                 entity.location.column, entity.location.end_column or entity.location.column,
+                                 entity.documentation)
+                            )
+                            total_entities += 1
+                        else:
+                            trace_line(f"Missing name or type for entity: {entity.name}", "warning")
                     
-                    # 提交事务
+                    trace_line("COMMIT transaction", "debug")
                     conn.commit()
+                    trace_line(f"Transaction committed, total_entities={total_entities}", "debug")
                     
                 except Exception as e:
-                    # 回滚事务
+                    trace_line(f"ROLLBACK transaction: {e}", "error")
                     conn.rollback()
                     logger.error(f"存储实体失败，已回滚: {e}")
                     raise
 
+        trace_line(f"_store_entities END: {total_entities} entities stored", "debug")
         return total_entities
 
+    @trace_call
     def _store_relations(self, parse_results: List[ParseResult]) -> int:
         """存储关系"""
-        from database.connection_pool import get_database_manager
+        trace_line(f"_store_relations START: {len(parse_results)} parse results", "debug")
 
+        from database.connection_pool import get_database_manager
         db_manager = get_database_manager()
+        trace_line(f"Got database manager", "debug")
+
         total_relations = 0
 
-        # 构建名称 -> 实体ID 的查找字典（用于调用关系和继承关系）
+        # 构建名称 -> 实体ID 的查找字典
+        trace_line("Building name_to_entity_id mapping", "debug")
         name_to_entity_id: Dict[str, int] = {}
         entity_rows = db_manager.fetch_all(
             """
@@ -362,155 +368,163 @@ class PipelineManager:
         )
         for row in entity_rows:
             name_to_entity_id[row["name"]] = row["id"]
+        trace_line(f"name_to_entity_id: {len(name_to_entity_id)} entries", "debug")
 
-        # 构建文件路径 -> 文件ID 的查找字典（用于导入关系）
+        # 构建文件路径 -> 文件ID 的查找字典
+        trace_line("Building path_to_file_id mapping", "debug")
         path_to_file_id: Dict[str, int] = {}
         file_rows = db_manager.fetch_all("SELECT id, path FROM files")
         for row in file_rows:
             path_to_file_id[row["path"]] = row["id"]
+        trace_line(f"path_to_file_id: {len(path_to_file_id)} entries", "debug")
 
         # 收集所有调用关系，用于批量插入
         call_relations_batch: List[tuple] = []
+        # 收集继承关系和导入关系，在同一个事务中处理
+        inheritance_batch: List[tuple] = []
+        import_batch: List[tuple] = []
 
         for result in parse_results:
-            # 获取当前文件的文件ID
             relative_path = self._resolve_relative_path(result.file_path)
             file_id = path_to_file_id.get(relative_path)
             if not file_id:
-                logger.warning(f"未找到文件记录，跳过关系存储: {relative_path}")
+                trace_line(f"File not found in mapping: {relative_path}", "warning")
                 continue
 
+            trace_line(f"Processing relations for: {relative_path}", "debug")
+
             for entity in result.entities:
-                # 查找当前实体在数据库中的ID
                 entity_id = name_to_entity_id.get(entity.name)
                 if not entity_id:
-                    logger.debug(f"未找到实体 '{entity.name}' 的数据库ID，跳过其关系")
+                    trace_line(f"Entity not found in mapping: {entity.name}", "debug")
                     continue
 
-                # 1. 存储调用关系 (call_relations)
+                # 1. 收集调用关系
                 if entity.calls:
+                    trace_line(f"Entity {entity.name} has {len(entity.calls)} calls", "debug")
                     for callee_name in entity.calls:
                         callee_id = name_to_entity_id.get(callee_name)
                         if callee_id:
                             call_relations_batch.append((entity_id, callee_id))
+                            trace_line(f"Added call relation: {entity.name} -> {callee_name}", "debug")
                         else:
-                            logger.debug(
-                                f"未找到被调用实体 '{callee_name}'，跳过调用关系"
-                            )
+                            trace_line(f"Callee not found: {callee_name}", "debug")
 
-                # 2. 存储继承关系 - extends (relation_type=1)
+                # 2. 收集继承关系 - extends
                 if entity.extends:
+                    trace_line(f"Entity {entity.name} extends {entity.extends}", "debug")
                     parent_id = name_to_entity_id.get(entity.extends)
                     if parent_id:
-                        self.relation_repo.insert_inheritance_relation(
-                            child_id=entity_id,
-                            parent_id=parent_id,
-                            relation_type=1
-                        )
+                        inheritance_batch.append((entity_id, parent_id, 1))
                         total_relations += 1
+                        trace_line(f"Added extends relation: {entity.name} -> {entity.extends}", "debug")
                     else:
-                        logger.warning(
-                            f"未找到父类实体 '{entity.extends}'，跳过继承关系"
-                        )
+                        trace_line(f"Parent not found: {entity.extends}", "warning")
 
-                # 3. 存储继承关系 - implements (relation_type=2)
+                # 3. 收集继承关系 - implements
                 if entity.implements:
+                    trace_line(f"Entity {entity.name} implements {entity.implements}", "debug")
                     for interface_name in entity.implements:
                         parent_id = name_to_entity_id.get(interface_name)
                         if parent_id:
-                            self.relation_repo.insert_inheritance_relation(
-                                child_id=entity_id,
-                                parent_id=parent_id,
-                                relation_type=2
-                            )
+                            inheritance_batch.append((entity_id, parent_id, 2))
                             total_relations += 1
+                            trace_line(f"Added implements relation: {entity.name} -> {interface_name}", "debug")
                         else:
-                            logger.warning(
-                                f"未找到接口实体 '{interface_name}'，跳过实现关系"
-                            )
+                            trace_line(f"Interface not found: {interface_name}", "warning")
 
-                # 4. 存储组件关系 (component_relations)
-                from parsers.arkts_parser import EntityType
-                if entity.entity_type == EntityType.COMPONENT and entity.references:
-                    for ref_name in entity.references:
-                        ref_id = name_to_entity_id.get(ref_name)
-                        if ref_id:
-                            self.relation_repo.insert_component_relation(
-                                parent_id=entity_id,
-                                child_id=ref_id,
-                                relation_type=1
-                            )
-                            total_relations += 1
-                        else:
-                            logger.debug(
-                                f"未找到引用的组件实体 '{ref_name}'，跳过组件关系"
-                            )
-
-            # 5. 存储导入关系 (import_relations)
+            # 5. 收集导入关系
             if result.imports:
+                trace_line(f"File {relative_path} has {len(result.imports)} imports", "debug")
                 for imp in result.imports:
                     source = imp.get("source", "")
                     is_default = imp.get("default") is not None
                     namespace = imp.get("namespace")
 
-                    # 尝试查找导入文件的ID
                     imported_file_id = path_to_file_id.get(source)
 
-                    # 存储默认导入
                     if imp.get("default"):
-                        self.relation_repo.insert_import_relation(
-                            file_id=file_id,
-                            imported_file_id=imported_file_id,
-                            imported_name=imp["default"],
-                            is_default=True
-                        )
+                        import_batch.append((file_id, imported_file_id, imp["default"], 1))
                         total_relations += 1
 
-                    # 存储命名空间导入
                     if namespace:
-                        self.relation_repo.insert_import_relation(
-                            file_id=file_id,
-                            imported_file_id=imported_file_id,
-                            imported_name=namespace,
-                            is_default=False
-                        )
+                        import_batch.append((file_id, imported_file_id, namespace, 0))
                         total_relations += 1
 
-                    # 存储命名导入
-                    for named in imp.get("named", []):
-                        # 处理 "B as C" 的别名语法
-                        alias = None
-                        clean_name = named.strip()
-                        if " as " in clean_name:
-                            parts = clean_name.split(" as ", 1)
-                            clean_name = parts[0].strip()
-                            alias = parts[1].strip()
-
-                        self.relation_repo.insert_import_relation(
-                            file_id=file_id,
-                            imported_file_id=imported_file_id,
-                            imported_name=clean_name,
-                            is_default=False,
-                            alias=alias
-                        )
+                    for name in imp.get("named", []):
+                        import_batch.append((file_id, imported_file_id, name, 0))
                         total_relations += 1
 
-        # 批量插入调用关系
-        if call_relations_batch:
-            inserted = self.relation_repo.insert_call_relations_batch(
-                call_relations_batch,
-                batch_size=self.batch_size
-            )
-            total_relations += inserted
-            logger.info(f"批量插入调用关系: {inserted} 条")
+        # 在单个事务中写入所有关系
+        with db_manager.get_pool().connection() as conn:
+            try:
+                conn.execute("BEGIN")
 
-        logger.info(f"关系存储完成，共存储 {total_relations} 条关系")
+                # 批量插入调用关系
+                if call_relations_batch:
+                    trace_line(f"Batch inserting {len(call_relations_batch)} call relations", "debug")
+                    conn.executemany(
+                        """
+                        INSERT INTO call_relations (caller_id, callee_id, call_count)
+                        VALUES (?, ?, 1)
+                        ON CONFLICT(caller_id, callee_id)
+                        DO UPDATE SET call_count = call_count + 1
+                        """,
+                        call_relations_batch
+                    )
+                    total_relations += len(call_relations_batch)
+
+                # 批量插入继承关系
+                if inheritance_batch:
+                    trace_line(f"Batch inserting {len(inheritance_batch)} inheritance relations", "debug")
+                    conn.executemany(
+                        """
+                        INSERT OR IGNORE INTO inheritance_relations
+                        (child_id, parent_id, relation_type)
+                        VALUES (?, ?, ?)
+                        """,
+                        inheritance_batch
+                    )
+
+                # 批量插入导入关系
+                if import_batch:
+                    trace_line(f"Batch inserting {len(import_batch)} import relations", "debug")
+                    for file_id, imported_file_id, imported_name, is_default in import_batch:
+                        imported_name_id = self.entity_repo._get_or_create_name(imported_name, conn=conn)
+                        conn.execute(
+                            """
+                            INSERT INTO import_relations
+                            (file_id, imported_file_id, imported_name_id, is_default, alias_name_id)
+                            VALUES (?, ?, ?, ?, ?)
+                            """,
+                            (file_id, imported_file_id, imported_name_id, is_default, None)
+                        )
+
+                conn.commit()
+                trace_line(f"All relations committed in single transaction", "debug")
+
+            except Exception:
+                conn.rollback()
+                raise
+
+        trace_line(f"_store_relations END: {total_relations} relations stored", "debug")
         return total_relations
 
-    def get_statistics(self) -> Dict[str, Any]:
-        """获取流水线统计"""
-        return {
-            "project_path": str(self.project_path),
-            "max_workers": self.max_workers,
-            "batch_size": self.batch_size
-        }
+    def _resolve_relative_path(self, file_path: str) -> str:
+        """将绝对路径解析为相对于项目根目录的路径"""
+        trace_line(f"_resolve_relative_path: {file_path}", "debug")
+        
+        # 标准化路径分隔符
+        normalized_path = os.path.normpath(file_path)
+        normalized_project = os.path.normpath(str(self.project_path))
+        
+        # 获取相对路径
+        if normalized_path.startswith(normalized_project):
+            relative = normalized_path[len(normalized_project):].lstrip(os.sep)
+            # 统一使用正斜杠
+            result = relative.replace(os.sep, '/')
+            trace_line(f"Resolved to: {result}", "debug")
+            return result
+        
+        trace_line(f"Path not under project, returning as-is: {file_path}", "warning")
+        return file_path.replace(os.sep, '/')

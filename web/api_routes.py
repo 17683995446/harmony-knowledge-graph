@@ -4,6 +4,7 @@ RESTful API端点定义
 """
 
 import time
+import copy
 import asyncio
 import threading
 from typing import List, Dict, Optional, Any
@@ -26,6 +27,14 @@ api_router = APIRouter()
 
 # 线程池，用于执行阻塞操作
 _thread_pool = ThreadPoolExecutor(max_workers=4)
+
+
+def shutdown_thread_pool() -> None:
+    """关闭线程池，释放线程资源"""
+    global _thread_pool
+    if _thread_pool is not None:
+        _thread_pool.shutdown(wait=True)
+        _thread_pool = None
 
 # 扫描状态锁，防止并发启动扫描
 _scan_lock = threading.Lock()
@@ -426,13 +435,13 @@ async def start_scan(
         if scan_status["is_scanning"]:
             raise HTTPException(status_code=409, detail="扫描已在进行中")
         scan_status["is_scanning"] = True
-    scan_status["progress"] = 0.0
-    scan_status["message"] = "准备扫描..."
-    scan_status["error"] = None
-    scan_status["scanned_files"] = 0
-    scan_status["parsed_entities"] = 0
-    scan_status["found_relations"] = 0
-    scan_status["duration"] = 0.0
+        scan_status["progress"] = 0.0
+        scan_status["message"] = "准备扫描..."
+        scan_status["error"] = None
+        scan_status["scanned_files"] = 0
+        scan_status["parsed_entities"] = 0
+        scan_status["found_relations"] = 0
+        scan_status["duration"] = 0.0
     
     # 使用同步函数，让FastAPI自动放到线程池执行，避免阻塞事件循环
     background_tasks.add_task(
@@ -450,7 +459,7 @@ async def start_scan(
 @api_router.get("/scan/status")
 async def get_scan_status() -> Dict:
     """获取当前扫描任务的进度"""
-    return scan_status
+    return copy.deepcopy(scan_status)
 
 
 def perform_scan(project_path: str, incremental: bool) -> None:

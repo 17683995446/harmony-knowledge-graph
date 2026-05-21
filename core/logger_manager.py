@@ -5,6 +5,7 @@ Logger Manager - 日志管理器
 
 import logging
 import sys
+import threading
 from pathlib import Path
 from datetime import datetime
 from typing import Optional
@@ -16,11 +17,14 @@ class LoggerManager:
     """日志管理器类"""
     
     _instance: Optional["LoggerManager"] = None
+    _lock = threading.Lock()
     _initialized: bool = False
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
-            cls._instance = super().__new__(cls)
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
         return cls._instance
     
     def __init__(

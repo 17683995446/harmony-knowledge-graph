@@ -4,6 +4,7 @@ Query Executor - 查询执行器
 """
 
 import json
+import re
 import time
 from typing import List, Dict, Optional, Any, Tuple
 from dataclasses import dataclass
@@ -73,6 +74,13 @@ class QueryExecutor:
         if not (sql_upper.startswith('SELECT') or sql_upper.startswith('WITH')):
             return False, "只允许执行SELECT查询"
 
+        # 检查表名是否在允许列表中（大小写不敏感）
+        table_pattern = re.compile(r'(?:FROM|JOIN)\s+(\w+)', re.IGNORECASE)
+        found_tables = set(table_pattern.findall(sql_upper))
+        for table in found_tables:
+            if table.lower() not in self.ALLOWED_TABLES:
+                return False, f"不允许访问的表: {table}"
+
         return True, ""
     
     def execute(
@@ -109,7 +117,11 @@ class QueryExecutor:
         
         try:
             with self.pool.connection() as conn:
-                cursor = conn.execute(sql, parameters)
+                # 空参数时不传递，避免某些SQLite版本的兼容性问题
+                if parameters:
+                    cursor = conn.execute(sql, parameters)
+                else:
+                    cursor = conn.execute(sql)
                 
                 # 获取列名
                 columns = [description[0] for description in cursor.description] if cursor.description else []
@@ -161,10 +173,10 @@ class QueryExecutor:
         
         result = self.execute(paginated_sql, parameters)
         
-        # 获取总数
+        # 获取总数（不传递原始parameters，因为count_sql是独立构造的）
         if result.success:
             count_sql = f"SELECT COUNT(*) as total FROM ({sql}) as subquery"
-            count_result = self.execute(count_sql, parameters, validate=False)
+            count_result = self.execute(count_sql, validate=False)
             if count_result.success and count_result.data:
                 result.row_count = count_result.data[0].get("total", 0)
         

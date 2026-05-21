@@ -127,6 +127,13 @@ class ASTAnalyzer:
         """
         logger.info(f"开始分析 {len(parse_results)} 个文件的解析结果")
 
+        # 重置所有状态，避免多次调用时状态累积
+        self.dependency_graph = DependencyGraph()
+        self.metrics = CodeMetrics()
+        self.entity_index = {}
+        self.file_entities = defaultdict(list)
+        self._name_to_entity_ids = defaultdict(list)
+
         # 建立实体索引
         self._build_entity_index(parse_results)
 
@@ -239,17 +246,17 @@ class ASTAnalyzer:
 
                 # 继承关系
                 if entity.extends:
-                    # 尝试找到父类
-                    for other_result in parse_results:
-                        for other_entity in other_result.entities:
-                            if (other_entity.name == entity.extends and
-                                other_entity.entity_type in (EntityType.CLASS, EntityType.INTERFACE)):
-                                parent_id = self._generate_entity_id(other_entity)
-                                self.dependency_graph.add_edge(
-                                    entity_id,
-                                    parent_id,
-                                    "extends"
-                                )
+                    # 使用已构建的名称查找表进行 O(1) 查找，避免 O(n²) 嵌套循环
+                    candidate_ids = self._name_to_entity_ids.get(entity.extends, [])
+                    for candidate_id in candidate_ids:
+                        candidate_entity = self.entity_index.get(candidate_id)
+                        if (candidate_entity and
+                            candidate_entity.entity_type in (EntityType.CLASS, EntityType.INTERFACE)):
+                            self.dependency_graph.add_edge(
+                                entity_id,
+                                candidate_id,
+                                "extends"
+                            )
 
                 # 调用关系 —— 尝试将调用名称解析为实体ID
                 for call in entity.calls:
@@ -428,16 +435,19 @@ class ASTAnalyzer:
         visited = set()
         rec_stack = set()
 
+        # 预构建邻接表，避免每次 DFS 遍历全部边（O(n*m) -> O(n+m)）
+        adjacency: Dict[str, List[str]] = defaultdict(list)
+        for edge in self.dependency_graph.edges:
+            if edge["type"] in ("imports", "extends"):
+                adjacency[edge["source"]].append(edge["target"])
+
         def dfs(node: str, path: List[str]):
             visited.add(node)
             rec_stack.add(node)
             path.append(node)
 
-            # 获取邻居
-            neighbors = []
-            for edge in self.dependency_graph.edges:
-                if edge["source"] == node and edge["type"] in ("imports", "extends"):
-                    neighbors.append(edge["target"])
+            # 从邻接表 O(1) 获取邻居
+            neighbors = adjacency.get(node, [])
 
             for neighbor in neighbors:
                 if neighbor not in visited:

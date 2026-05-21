@@ -77,11 +77,14 @@ class ConnectionPool:
         if conn:
             try:
                 self._pool.put(conn, block=False)
-            except:
+            except Exception:
                 # 池已满，关闭连接
                 conn.close()
                 with self._lock:
                     self._connection_count -= 1
+            # Clear thread-local reference so next get_connection() pulls from pool
+            if hasattr(self._local, 'connection'):
+                self._local.connection = None
     
     @contextmanager
     def connection(self):
@@ -198,15 +201,18 @@ class DatabaseManager:
 
 # 延迟初始化，避免导入时副作用
 _db_manager: Optional[DatabaseManager] = None
+_db_manager_lock = threading.Lock()
 
 
 def get_database_manager(db_path: str = None) -> DatabaseManager:
     """获取数据库管理器（延迟初始化）"""
     global _db_manager
     if _db_manager is None:
-        if db_path is None:
-            from core.config_manager import get_configuration
-            config = get_configuration()
-            db_path = config.database_path
-        _db_manager = DatabaseManager(db_path)
+        with _db_manager_lock:
+            if _db_manager is None:
+                if db_path is None:
+                    from core.config_manager import get_configuration
+                    config = get_configuration()
+                    db_path = config.database_path
+                _db_manager = DatabaseManager(db_path)
     return _db_manager

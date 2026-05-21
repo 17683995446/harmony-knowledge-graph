@@ -270,7 +270,8 @@ class RelationRepository:
                             child_node = {"id": child_id, "name": row["child_name"], "children": []}
                             current_node["children"].append(child_node)
                             queue.append((child_id, child_node, depth + 1))
-                except Exception:
+                except Exception as e:
+                    logger.error(f"Error in get_component_tree at depth {depth}: {e}")
                     break
 
         return tree

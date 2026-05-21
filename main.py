@@ -44,8 +44,8 @@ def serve(host: str, port: int, reload: bool):
     
     uvicorn.run(
         app,
-        host=host or config.host,
-        port=port or config.port,
+        host=host if host is not None else config.host,
+        port=port if port is not None else config.port,
         reload=reload
     )
 

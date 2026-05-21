@@ -280,20 +280,24 @@ class SchemaManager:
         if Path(self.db_path).exists():
             is_corrupted = False
             try:
-                with sqlite3.connect(self.db_path) as test_conn:
-                    # 更严格的完整性检查
-                    test_conn.execute("PRAGMA integrity_check")
-                    result = test_conn.fetchone()
+                with sqlite3.connect(self.db_path, timeout=5) as test_conn:
+                    # 完整性检查
+                    result = test_conn.execute("PRAGMA integrity_check").fetchone()
                     if result and result[0] != "ok":
                         is_corrupted = True
-            except (sqlite3.DatabaseError, sqlite3.OperationalError, Exception):
+            except sqlite3.DatabaseError:
+                # 真正的数据库损坏（文件格式错误等）
                 is_corrupted = True
+            except (sqlite3.OperationalError, OSError):
+                # 数据库被锁定或文件系统错误 - 不视为损坏，跳过重建
+                logger.debug("数据库暂时不可访问（可能被锁定），跳过完整性检查")
+                return
             
             if is_corrupted:
                 logger.warning("数据库文件损坏，删除并重新创建")
                 try:
                     Path(self.db_path).unlink()
-                except:
+                except Exception:
                     pass
 
         with sqlite3.connect(self.db_path) as conn:

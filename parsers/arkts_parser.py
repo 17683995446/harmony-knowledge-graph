@@ -148,9 +148,9 @@ class ArkTSParser:
         re.MULTILINE
     )
 
-    # ArkUI组件模式 (@Component, @Entry等)
+    # ArkUI组件模式 (@Component, @Entry等，支持 class 和 struct)
     ARKUI_COMPONENT_PATTERN = re.compile(
-        r'@(?:Component|Entry|Preview|CustomDialog)\s+(?:export\s+)?class\s+(\w+)',
+        r'@(?:Component|Entry|Preview|CustomDialog)\s+(?:export\s+)?(?:class|struct)\s+(\w+)',
         re.MULTILINE
     )
 
