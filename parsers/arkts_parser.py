@@ -118,11 +118,11 @@ class ArkTSParser:
         re.MULTILINE
     )
 
-    # 方法/函数定义模式
+    # 方法/函数定义模式（支持泛型参数 <T>, <K, V> 等）
     METHOD_PATTERN = re.compile(
         r'(?:async\s+)?(?:static\s+)?(?:private\s+)?(?:protected\s+)?(?:public\s+)?'
         r'(?:override\s+)?'
-        r'(\w+)\s*\(([^)]*)\)'
+        r'(\w+)\s*(?:<[^>]*>)?\s*\(([^)]*)\)'
         r'(?:\s*:\s*([\w<>\[\]|\s]+))?'
         r'\s*(?:\{|=>)',
         re.MULTILINE
@@ -242,12 +242,21 @@ class ArkTSParser:
 
     def _get_location(self, pos: int) -> SourceLocation:
         """获取指定位置的源代码位置"""
+        # 边界检查：如果 pos 超出内容范围，返回安全的默认值
+        content_len = len(self.current_content or "")
+        if pos < 0 or pos >= content_len:
+            return SourceLocation(line=1, column=1)
+
         line = 1
         for i, offset in enumerate(self.line_offsets):
             if offset > pos:
                 line = i
                 break
             line = i + 1
+
+        # 确保 line 索引不越界
+        if line - 1 >= len(self.line_offsets):
+            return SourceLocation(line=1, column=1)
 
         column = pos - self.line_offsets[line - 1] + 1
         return SourceLocation(line=line, column=column)
@@ -330,15 +339,28 @@ class ArkTSParser:
         if not params_str.strip():
             return parameters
 
-        # 简单解析，处理基本参数
-        for param in params_str.split(','):
+        # 改进的参数解析：正确处理泛型参数和带默认值的参数
+        # 使用括号深度感知的逗号分割
+        raw_params = self._split_params(params_str)
+        for param in raw_params:
             param = param.strip()
             if not param:
                 continue
 
-            parts = param.split(':')
-            param_name = parts[0].strip()
-            param_type = parts[1].strip() if len(parts) > 1 else 'any'
+            # 找到第一个不在泛型 <...> 内部的冒号，作为名称和类型的分隔
+            colon_pos = self._find_type_separator(param)
+            if colon_pos == -1:
+                param_name = param.strip()
+                param_type = 'any'
+            else:
+                param_name = param[:colon_pos].strip()
+                type_part = param[colon_pos + 1:].strip()
+                # 去掉默认值部分：找到第一个不在括号/泛型内的 '='
+                eq_pos = self._find_default_value_separator(type_part)
+                if eq_pos != -1:
+                    param_type = type_part[:eq_pos].strip()
+                else:
+                    param_type = type_part
 
             parameters.append({
                 "name": param_name,
@@ -346,6 +368,62 @@ class ArkTSParser:
             })
 
         return parameters
+
+    @staticmethod
+    def _split_params(params_str: str) -> List[str]:
+        """按逗号分割参数列表，忽略括号和尖括号内部的逗号"""
+        parts = []
+        depth_paren = 0  # 圆括号深度
+        depth_angle = 0  # 尖括号深度
+        current = []
+        for ch in params_str:
+            if ch == '(':
+                depth_paren += 1
+            elif ch == ')':
+                depth_paren -= 1
+            elif ch == '<':
+                depth_angle += 1
+            elif ch == '>':
+                depth_angle -= 1
+            elif ch == ',' and depth_paren == 0 and depth_angle == 0:
+                parts.append(''.join(current))
+                current = []
+                continue
+            current.append(ch)
+        if current:
+            parts.append(''.join(current))
+        return parts
+
+    @staticmethod
+    def _find_type_separator(param: str) -> int:
+        """找到参数中第一个不在泛型 <...> 内部的冒号位置"""
+        depth_angle = 0
+        for i, ch in enumerate(param):
+            if ch == '<':
+                depth_angle += 1
+            elif ch == '>':
+                depth_angle -= 1
+            elif ch == ':' and depth_angle == 0:
+                return i
+        return -1
+
+    @staticmethod
+    def _find_default_value_separator(type_part: str) -> int:
+        """在类型部分中找到第一个不在括号/泛型内的 '=' 位置"""
+        depth_paren = 0
+        depth_angle = 0
+        for i, ch in enumerate(type_part):
+            if ch == '(':
+                depth_paren += 1
+            elif ch == ')':
+                depth_paren -= 1
+            elif ch == '<':
+                depth_angle += 1
+            elif ch == '>':
+                depth_angle -= 1
+            elif ch == '=' and depth_paren == 0 and depth_angle == 0:
+                return i
+        return -1
 
     def _parse_properties(self) -> List[ParsedEntity]:
         """解析属性定义"""
@@ -493,6 +571,35 @@ class ArkTSParser:
 
         while pos < max_scan and depth > 0:
             ch = content[pos]
+            # 跳过字符串字面量
+            if ch in ("'", '"'):
+                quote = ch
+                pos += 1
+                while pos < max_scan:
+                    c2 = content[pos]
+                    if c2 == '\\':
+                        pos += 2  # 跳过转义字符
+                        continue
+                    if c2 == quote:
+                        pos += 1
+                        break
+                    pos += 1
+                continue
+            # 跳过 // 单行注释
+            if ch == '/' and pos + 1 < content_len and content[pos + 1] == '/':
+                pos += 2
+                while pos < max_scan and content[pos] != '\n':
+                    pos += 1
+                continue
+            # 跳过 /* 多行注释 */
+            if ch == '/' and pos + 1 < content_len and content[pos + 1] == '*':
+                pos += 2
+                while pos + 1 < max_scan:
+                    if content[pos] == '*' and content[pos + 1] == '/':
+                        pos += 2
+                        break
+                    pos += 1
+                continue
             if ch == '{':
                 depth += 1
             elif ch == '}':
@@ -503,109 +610,6 @@ class ArkTSParser:
             return (body_start, pos - 1)
 
         return None
-
-    def _is_inside_string_literal(self, pos: int) -> bool:
-        """
-        判断给定位置是否在字符串字面量内。
-
-        通过从文件开头扫描到目标位置，追踪引号状态来判断。
-        会正确处理转义字符和模板字符串。
-
-        Args:
-            pos: 文件内容中的字符位置
-
-        Returns:
-            True 如果该位置在字符串字面量内
-        """
-        if not self.current_content or pos < 0 or pos >= len(self.current_content):
-            return False
-
-        content = self.current_content
-        content_len = len(content)
-        i = 0
-        while i < pos:
-            ch = content[i]
-            if ch == '/' and i + 1 < content_len:
-                # 跳过单行注释
-                if content[i + 1] == '/':
-                    while i < pos and content[i] != '\n':
-                        i += 1
-                    continue
-                # 跳过多行注释
-                if content[i + 1] == '*':
-                    i += 2
-                    while i < pos and not (content[i] == '*' and content[i + 1] == '/'):
-                        i += 1
-                    i += 2
-                    continue
-            if ch == '"' or ch == "'" or ch == '`':
-                quote = ch
-                i += 1
-                while i < pos and content[i] != quote:
-                    if content[i] == '\\':
-                        i += 1  # 跳过转义字符
-                    i += 1
-                if i < pos and content[i] == quote:
-                    i += 1
-                    # 如果 pos 恰好在引号之后，不在字符串内
-                    if i >= pos:
-                        return False
-                else:
-                    # 没有找到闭合引号，pos 在未闭合的字符串内
-                    return True
-                continue
-            i += 1
-        return False
-
-    def _is_inside_comment(self, pos: int) -> bool:
-        """
-        判断给定位置是否在注释内。
-
-        Args:
-            pos: 文件内容中的字符位置
-
-        Returns:
-            True 如果该位置在注释内
-        """
-        if not self.current_content or pos < 0 or pos >= len(self.current_content):
-            return False
-
-        content = self.current_content
-        i = 0
-        while i < pos:
-            ch = content[i]
-            if ch == '/' and i + 1 < len(content):
-                if content[i + 1] == '/':
-                    # 单行注释，到行尾
-                    while i < pos and content[i] != '\n':
-                        i += 1
-                    if i < pos:
-                        return True
-                    return False
-                if content[i + 1] == '*':
-                    # 多行注释
-                    i += 2
-                    while i < pos and not (content[i] == '*' and i + 1 < len(content) and content[i + 1] == '/'):
-                        i += 1
-                    if i < pos:
-                        # 找到了注释结束
-                        i += 2
-                        continue
-                    else:
-                        # pos 在未闭合的多行注释内
-                        return True
-            if ch == '"' or ch == "'" or ch == '`':
-                # 跳过字符串
-                quote = ch
-                i += 1
-                while i < len(content) and content[i] != quote:
-                    if content[i] == '\\':
-                        i += 1
-                    i += 1
-                i += 1
-                continue
-            i += 1
-        return False
 
     def _extract_calls_from_content(self, start: int = 0, end: Optional[int] = None,
                                      entity_name: Optional[str] = None) -> List[str]:
@@ -681,12 +685,3 @@ class ArkTSParser:
                     )
                     entity.calls = []
 
-    def parse_batch(self, file_paths: List[str]) -> List[ParseResult]:
-        """批量解析文件"""
-        results = []
-
-        for file_path in file_paths:
-            result = self.parse_file(file_path)
-            results.append(result)
-
-        return results

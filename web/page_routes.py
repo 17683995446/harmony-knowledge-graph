@@ -6,7 +6,7 @@ HTML页面路由定义
 from pathlib import Path
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, FileResponse
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader, select_autoescape, TemplateNotFound
 
 page_router = APIRouter()
 
@@ -24,8 +24,19 @@ _jinja_env = Environment(
 
 def _render_template(template_name: str, context: dict) -> str:
     """渲染Jinja2模板"""
-    template = _jinja_env.get_template(template_name)
-    return template.render(**context)
+    try:
+        template = _jinja_env.get_template(template_name)
+        return template.render(**context)
+    except TemplateNotFound:
+        return f"""<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>404 - Template Not Found</title></head>
+<body style="font-family: sans-serif; text-align: center; padding: 50px;">
+<h1>404 - Page Not Found</h1>
+<p>The template <strong>{template_name}</strong> does not exist.</p>
+<p>Please ensure the static files are properly deployed.</p>
+</body>
+</html>"""
 
 
 @page_router.get("/", response_class=HTMLResponse)

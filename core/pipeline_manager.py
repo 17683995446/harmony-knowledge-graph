@@ -11,7 +11,7 @@ from pathlib import Path
 
 from core.config_manager import get_configuration
 from core.logger_manager import get_logger
-from core.parallel_processor import ParallelProcessor, BatchInserter
+from core.parallel_processor import ParallelProcessor
 from parsers.file_scanner import FileScanner, FileInfo
 from parsers.arkts_parser import ArkTSParser, ParseResult
 from parsers.ast_analyzer import ASTAnalyzer

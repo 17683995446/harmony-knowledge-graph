@@ -306,14 +306,28 @@ class ASTAnalyzer:
 
                     self.metrics.total_lines += len(lines)
 
+                    in_block_comment = False
                     for line in lines:
                         stripped = line.strip()
                         if not stripped:
                             self.metrics.blank_lines += 1
                         elif stripped.startswith('//'):
                             self.metrics.comment_lines += 1
-                        elif stripped.startswith('/*') or stripped.startswith('*'):
+                        elif stripped.startswith('/*'):
+                            # 多行注释开始行
                             self.metrics.comment_lines += 1
+                            if '*/' not in stripped:
+                                in_block_comment = True
+                        elif stripped.endswith('*/') and in_block_comment:
+                            # 多行注释结束行
+                            self.metrics.comment_lines += 1
+                            in_block_comment = False
+                        elif in_block_comment:
+                            # 多行注释中间行：只有以 * 开头或为空时才计为注释行
+                            if stripped.startswith('*') or not stripped:
+                                self.metrics.comment_lines += 1
+                            else:
+                                self.metrics.code_lines += 1
                         else:
                             self.metrics.code_lines += 1
             except Exception as e:
@@ -399,9 +413,12 @@ class ASTAnalyzer:
             # 将调用名称解析为实体ID，而不是直接将名称字符串当作ID使用
             resolved_id = self._resolve_call_to_entity_id(call)
             if resolved_id:
-                sub_chain = self._trace_call_chain(resolved_id, depth + 1, max_depth, visited.copy())
+                # 使用"添加-递归-移除"模式，避免 visited.copy() 的指数级内存使用
+                visited.add(resolved_id)
+                sub_chain = self._trace_call_chain(resolved_id, depth + 1, max_depth, visited)
                 if sub_chain:
                     chain["calls"].append(sub_chain)
+                visited.discard(resolved_id)
 
         return chain
 
@@ -415,6 +432,8 @@ class ASTAnalyzer:
             if e.entity_type == EntityType.COMPONENT
         ]
 
+        # 构建组件ID到节点映射
+        component_id_to_node: Dict[str, Dict] = {}
         for component in components:
             node = {
                 "id": self._generate_entity_id(component),
@@ -424,7 +443,29 @@ class ASTAnalyzer:
                 "line": component.location.line,
                 "children": []
             }
+            component_id_to_node[node["id"]] = node
             hierarchy.append(node)
+
+        # 利用 dependency_graph 中的边构建父子关系
+        # 查找组件之间的引用关系（通过 calls 或 contains 边）
+        component_ids = set(component_id_to_node.keys())
+        for edge in self.dependency_graph.edges:
+            source_id = edge["source"]
+            target_id = edge["target"]
+            # 如果边的源和目标都是组件，且边类型表示引用/包含关系
+            if (source_id in component_id_to_node
+                    and target_id in component_id_to_node
+                    and edge["type"] in ("calls", "contains", "has_member")):
+                parent_node = component_id_to_node[source_id]
+                child_node = component_id_to_node[target_id]
+                # 避免重复添加
+                if child_node["id"] not in [c["id"] for c in parent_node["children"]]:
+                    parent_node["children"].append({
+                        "id": child_node["id"],
+                        "name": child_node["name"],
+                        "file": child_node["file"],
+                        "line": child_node["line"]
+                    })
 
         return hierarchy
 
@@ -460,6 +501,7 @@ class ASTAnalyzer:
 
             path.pop()
             rec_stack.remove(node)
+            visited.remove(node)
 
         for node in self.dependency_graph.nodes:
             if node not in visited:

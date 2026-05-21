@@ -182,74 +182,7 @@ class SQLGenerator:
                 "natural_language": natural_language,
                 "error": str(e)
             }
-    
-    async def generate_sql_with_explanation(
-        self,
-        natural_language: str
-    ) -> Dict[str, Any]:
-        """
-        生成SQL并附带解释
-        
-        Args:
-            natural_language: 自然语言查询
-            
-        Returns:
-            Dict: 包含sql、explanation等字段
-        """
-        # 先生成SQL
-        result = await self.generate_sql(natural_language)
-        
-        if not result["success"]:
-            return result
-        
-        # 生成解释
-        try:
-            explanation = await self._generate_explanation(
-                natural_language,
-                result["sql"]
-            )
-            result["explanation"] = explanation
-        except Exception as e:
-            logger.warning(f"解释生成失败: {e}")
-        
-        return result
-    
-    async def _generate_explanation(
-        self,
-        question: str,
-        sql: str
-    ) -> str:
-        """生成查询解释"""
-        messages = [
-            {
-                "role": "system",
-                "content": "你是一个SQL专家。请用一句话解释这个SQL查询的作用。"
-            },
-            {
-                "role": "user",
-                "content": f"问题: {question}\nSQL: {sql}\n\n请解释这个查询："
-            }
-        ]
-        
-        completion = await self.llm_client.chat_completion(
-            messages=messages,
-            temperature=0.3,
-            max_tokens=200
-        )
-        
-        return completion.content.strip()
-    
-    def add_example(self, question: str, sql: str) -> None:
-        """添加查询示例"""
-        self.schema_context.examples.append({
-            "question": question,
-            "sql": sql
-        })
-        
-        # 限制示例数量
-        if len(self.schema_context.examples) > 20:
-            self.schema_context.examples = self.schema_context.examples[-20:]
-    
+
     def get_common_queries(self) -> List[Dict[str, str]]:
         """获取常用查询模板"""
         return [

@@ -6,6 +6,8 @@ Query Optimizer - 查询优化器
 import asyncio
 import hashlib
 import json
+import re
+import threading
 import time
 from typing import Dict, List, Optional, Any, Callable
 from dataclasses import dataclass, field
@@ -37,35 +39,38 @@ class LRUCache:
         self.cache: OrderedDict[str, CachedResult] = OrderedDict()
         self.hits = 0
         self.misses = 0
+        self._lock = threading.Lock()
     
     def get(self, key: str, ttl_seconds: int = 300) -> Optional[Any]:
         """获取缓存值"""
-        if key in self.cache:
-            cached = self.cache[key]
-            if not cached.is_expired(ttl_seconds):
-                # 移动到末尾（最近使用）
-                self.cache.move_to_end(key)
-                self.hits += 1
-                return cached.data
-            else:
-                # 过期，删除
-                del self.cache[key]
-        
-        self.misses += 1
-        return None
+        with self._lock:
+            if key in self.cache:
+                cached = self.cache[key]
+                if not cached.is_expired(ttl_seconds):
+                    # 移动到末尾（最近使用）
+                    self.cache.move_to_end(key)
+                    self.hits += 1
+                    return cached.data
+                else:
+                    # 过期，删除
+                    del self.cache[key]
+            
+            self.misses += 1
+            return None
     
     def set(self, key: str, value: Any) -> None:
         """设置缓存值"""
-        # 如果已满，删除最旧的
-        if len(self.cache) >= self.max_size and key not in self.cache:
-            self.cache.popitem(last=False)
-        
-        self.cache[key] = CachedResult(
-            data=value,
-            timestamp=time.time(),
-            query_hash=key
-        )
-        self.cache.move_to_end(key)
+        with self._lock:
+            # 如果已满，删除最旧的
+            if len(self.cache) >= self.max_size and key not in self.cache:
+                self.cache.popitem(last=False)
+            
+            self.cache[key] = CachedResult(
+                data=value,
+                timestamp=time.time(),
+                query_hash=key
+            )
+            self.cache.move_to_end(key)
     
     def clear(self) -> None:
         """清空缓存"""
@@ -113,12 +118,8 @@ class QueryOptimizer:
         optimized = sql.strip()
         
         # 添加LIMIT如果没有
-        # 检查主查询（最后一个右括号之后）是否已有LIMIT，避免破坏子查询中的LIMIT
-        main_query = sql
-        last_paren = sql.rfind(')')
-        if last_paren != -1:
-            main_query = sql[last_paren+1:]
-        if "LIMIT" not in main_query.upper():
+        # 直接检查整个SQL是否已包含LIMIT子句，避免基于括号位置的不可靠判断
+        if "LIMIT" not in optimized.upper():
             # 检查是否是聚合查询
             if "COUNT(" not in optimized.upper():
                 optimized += " LIMIT 1000"
@@ -256,7 +257,7 @@ class QueryOptimizer:
             # 分析WHERE子句
             if "WHERE" in sql:
                 # 简单的启发式建议
-                if "NAME" in sql and "NAMES" not in sql.upper():
+                if re.search(r'\bNAME\b', sql):
                     suggestions.append({
                         "table": "names",
                         "column": "name",

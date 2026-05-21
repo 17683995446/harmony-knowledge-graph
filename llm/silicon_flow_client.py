@@ -5,7 +5,7 @@ Silicon Flow Client - 硅基流动API客户端
 
 import json
 import httpx
-from typing import Dict, List, Optional, Any, AsyncGenerator
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 
 from core.config_manager import get_configuration
@@ -122,61 +122,7 @@ class SiliconFlowClient:
         except Exception as e:
             logger.error(f"API调用失败: {e}")
             raise
-    
-    async def chat_completion_stream(
-        self,
-        messages: List[Dict[str, str]],
-        temperature: float = 0.1,
-        max_tokens: int = 2000
-    ) -> AsyncGenerator[str, None]:
-        """
-        流式聊天完成
-        
-        Args:
-            messages: 消息列表
-            temperature: 温度参数
-            max_tokens: 最大token数
-            
-        Yields:
-            str: 生成的文本片段
-        """
-        payload = {
-            "model": self.model,
-            "messages": messages,
-            "temperature": temperature,
-            "max_tokens": max_tokens,
-            "stream": True
-        }
-        
-        try:
-            async with self.client.stream(
-                "POST",
-                "/chat/completions",
-                json=payload
-            ) as response:
-                response.raise_for_status()
-                
-                async for line in response.aiter_lines():
-                    if line.startswith("data: "):
-                        data_str = line[6:]
-                        if data_str == "[DONE]":
-                            break
-                        
-                        try:
-                            data = json.loads(data_str)
-                            delta = data["choices"][0].get("delta", {})
-                            content = delta.get("content", "")
-                            if content:
-                                yield content
-                        except json.JSONDecodeError:
-                            continue
-                        except (KeyError, IndexError):
-                            continue
-                            
-        except Exception as e:
-            logger.error(f"流式API调用失败: {e}")
-            raise
-    
+
     async def generate_sql(
         self,
         natural_language: str,
@@ -208,97 +154,7 @@ class SiliconFlowClient:
         )
         
         return self._extract_sql(completion.content)
-    
-    async def explain_query(
-        self,
-        sql: str,
-        results: List[Dict]
-    ) -> str:
-        """
-        解释查询结果
-        
-        Args:
-            sql: SQL查询
-            results: 查询结果
-            
-        Returns:
-            str: 自然语言解释
-        """
-        system_prompt = """你是一个代码分析专家。请用简洁的中文解释SQL查询结果。
-关注代码结构、依赖关系和潜在问题。"""
-        
-        results_summary = json.dumps(results[:10], ensure_ascii=False, indent=2)
-        
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": f"""
-SQL查询:
-```sql
-{sql}
-```
 
-查询结果（前10条）:
-```json
-{results_summary}
-```
-
-请用中文简要解释这些结果的含义：
-"""}
-        ]
-        
-        completion = await self.chat_completion(
-            messages=messages,
-            temperature=0.3,
-            max_tokens=500
-        )
-        
-        return completion.content
-    
-    async def analyze_code_structure(
-        self,
-        code_snippet: str,
-        context: Optional[str] = None
-    ) -> Dict[str, Any]:
-        """
-        分析代码结构
-        
-        Args:
-            code_snippet: 代码片段
-            context: 上下文信息
-            
-        Returns:
-            Dict: 分析结果
-        """
-        system_prompt = """你是一个ArkTS/HarmonyOS代码分析专家。
-请分析给定的代码片段，提取以下信息并以JSON格式返回：
-{
-    "purpose": "代码的主要目的",
-    "components": ["使用的组件列表"],
-    "dependencies": ["依赖项"],
-    "complexity": "复杂度评估（低/中/高）",
-    "issues": ["潜在问题"]
-}"""
-        
-        user_content = f"代码片段:\n```typescript\n{code_snippet}\n```"
-        if context:
-            user_content += f"\n\n上下文:\n{context}"
-        
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_content}
-        ]
-        
-        completion = await self.chat_completion(
-            messages=messages,
-            temperature=0.2,
-            max_tokens=800
-        )
-        
-        try:
-            return json.loads(completion.content)
-        except json.JSONDecodeError:
-            return {"analysis": completion.content}
-    
     def _build_sql_system_prompt(
         self,
         schema_context: str,

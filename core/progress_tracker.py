@@ -3,6 +3,7 @@ Progress Tracker - 进度追踪器
 实时显示处理进度，支持多阶段任务
 """
 
+import logging
 import time
 from typing import Optional, Dict, Any
 from dataclasses import dataclass, field
@@ -26,6 +27,12 @@ class ProgressState:
     def percentage(self) -> float:
         """计算完成百分比"""
         if self.total == 0:
+            if self.completed > 0:
+                logging.warning(
+                    f"ProgressState 状态不一致: total=0 但 completed={self.completed}，"
+                    f"返回 100.0 表示已完成但无总量基准"
+                )
+                return 100.0
             return 0.0
         return (self.completed / self.total) * 100
     
@@ -124,45 +131,3 @@ class ProgressTracker:
         self._console.print(f"  总计: {self.state.total}")
         self._console.print(f"  完成: {self.state.completed}")
         self._console.print(f"  耗时: {self.state.elapsed_time:.2f}秒")
-
-
-class MultiStageProgressTracker:
-    """多阶段进度追踪器"""
-    
-    def __init__(self, stages: list[str]):
-        self.stages = stages
-        self.current_stage_index = 0
-        self.stage_trackers: Dict[str, ProgressTracker] = {}
-        self.results: Dict[str, Any] = {}
-    
-    def start_stage(self, stage_name: str, total: int = 100) -> ProgressTracker:
-        """开始新阶段"""
-        if stage_name not in self.stages:
-            raise ValueError(f"未知阶段: {stage_name}")
-        
-        tracker = ProgressTracker(description=stage_name)
-        tracker.set_total(total)
-        self.stage_trackers[stage_name] = tracker
-        self.current_stage_index = self.stages.index(stage_name)
-        return tracker
-    
-    def complete_stage(self, stage_name: str, result: Any = None) -> None:
-        """完成阶段"""
-        if result is not None:
-            self.results[stage_name] = result
-        
-        if stage_name in self.stage_trackers:
-            self.stage_trackers[stage_name].print_summary()
-    
-    def get_overall_progress(self) -> Dict[str, Any]:
-        """获取整体进度"""
-        total_stages = len(self.stages)
-        completed_stages = len(self.results)
-        
-        return {
-            "total_stages": total_stages,
-            "completed_stages": completed_stages,
-            "current_stage": self.stages[self.current_stage_index] if self.current_stage_index < total_stages else None,
-            "percentage": (completed_stages / total_stages) * 100 if total_stages > 0 else 0,
-            "stage_results": self.results
-        }

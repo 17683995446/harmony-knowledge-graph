@@ -35,8 +35,9 @@ async def lifespan(app: FastAPI):
     # 关闭时清理
     logger.info("应用关闭中...")
     db_manager.get_pool().close_all()
-    from web.api_routes import shutdown_thread_pool
+    from web.api_routes import shutdown_thread_pool, cleanup_llm_client
     shutdown_thread_pool()
+    cleanup_llm_client()
     logger.info("应用关闭完成")
 
 

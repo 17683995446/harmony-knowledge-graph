@@ -145,7 +145,12 @@ class FileScanner:
         
         for root, dirs, files in os.walk(self.project_path):
             root_path = Path(root)
-            relative_root = root_path.relative_to(self.project_path)
+            try:
+                relative_root = root_path.relative_to(self.project_path)
+            except ValueError:
+                logger.warning(f"跳过项目目录外的路径: {root_path}")
+                dirs[:] = []
+                continue
             
             # 过滤目录
             dirs[:] = [
@@ -155,7 +160,11 @@ class FileScanner:
             
             for filename in files:
                 file_path = root_path / filename
-                relative_path = file_path.relative_to(self.project_path)
+                try:
+                    relative_path = file_path.relative_to(self.project_path)
+                except ValueError:
+                    logger.warning(f"跳过项目目录外的文件: {file_path}")
+                    continue
                 
                 # 检查是否应该忽略
                 if self.ignore_spec.match_file(str(relative_path)):
@@ -216,19 +225,3 @@ class FileScanner:
                 hasher.update(chunk)
         
         return hasher.hexdigest()
-    
-    def get_statistics(self, file_infos: List[FileInfo]) -> Dict:
-        """获取扫描统计信息"""
-        total_size = sum(f.size for f in file_infos)
-        extensions = {}
-        
-        for f in file_infos:
-            ext = Path(f.path).suffix
-            extensions[ext] = extensions.get(ext, 0) + 1
-        
-        return {
-            "total_files": len(file_infos),
-            "total_size_bytes": total_size,
-            "total_size_mb": round(total_size / (1024 * 1024), 2),
-            "extensions": extensions
-        }

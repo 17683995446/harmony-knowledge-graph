@@ -29,6 +29,27 @@ api_router = APIRouter()
 _thread_pool = ThreadPoolExecutor(max_workers=4)
 
 
+def cleanup_llm_client() -> None:
+    """关闭LLM客户端，释放httpx.AsyncClient资源（同步包装）"""
+    global _sql_generator, _llm_client
+    if _llm_client is not None:
+        import asyncio
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # 如果事件循环正在运行，创建一个新线程来执行异步关闭
+                import concurrent.futures
+                with concurrent.futures.ThreadPoolExecutor() as pool:
+                    future = pool.submit(asyncio.run, _llm_client.close())
+                    future.result()
+            else:
+                loop.run_until_complete(_llm_client.close())
+        except RuntimeError:
+            asyncio.run(_llm_client.close())
+        _llm_client = None
+        _sql_generator = None
+
+
 def shutdown_thread_pool() -> None:
     """关闭线程池，释放线程资源"""
     global _thread_pool
