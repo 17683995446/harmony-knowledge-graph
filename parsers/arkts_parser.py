@@ -206,8 +206,54 @@ class ArkTSParser:
         result = ParseResult(file_path=file_path)
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                self.current_content = f.read()
+            # 尝试UTF-8编码读取
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    self.current_content = f.read()
+            except UnicodeDecodeError:
+                # UTF-8失败，尝试检测BOM或降级处理
+                with open(file_path, 'rb') as f:
+                    raw_content = f.read()
+                
+                # 检测BOM
+                decoded = False
+                if raw_content.startswith(b'\xef\xbb\xbf'):
+                    # UTF-8 BOM
+                    try:
+                        self.current_content = raw_content[3:].decode('utf-8')
+                        decoded = True
+                    except UnicodeDecodeError:
+                        pass
+                elif raw_content.startswith(b'\xff\xfe'):
+                    # UTF-16 LE BOM
+                    try:
+                        self.current_content = raw_content.decode('utf-16-le')
+                        decoded = True
+                    except UnicodeDecodeError:
+                        pass
+                elif raw_content.startswith(b'\xfe\xff'):
+                    # UTF-16 BE BOM
+                    try:
+                        self.current_content = raw_content.decode('utf-16-be')
+                        decoded = True
+                    except UnicodeDecodeError:
+                        pass
+                
+                if not decoded:
+                    # 无BOM或BOM解码失败，尝试其他编码
+                    for encoding in ['gbk', 'gb2312', 'latin-1', 'cp1252']:
+                        try:
+                            self.current_content = raw_content.decode(encoding)
+                            decoded = True
+                            break
+                        except UnicodeDecodeError:
+                            continue
+                    
+                    if not decoded:
+                        # 所有编码都失败，使用latin-1（不会抛出异常）
+                        self.current_content = raw_content.decode('latin-1', errors='replace')
+                
+                logger.debug(f"使用备选编码解析文件: {file_path}")
 
             self._build_line_offsets()
 
