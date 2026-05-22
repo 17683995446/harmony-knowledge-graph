@@ -24,9 +24,10 @@ class QueryResult:
     execution_time_ms: float
     row_count: int
     error_message: Optional[str] = None
+    total_count: Optional[int] = None  # 分页查询时的总记录数
     
     def to_dict(self) -> Dict:
-        return {
+        result = {
             "success": self.success,
             "data": self.data,
             "columns": self.columns,
@@ -34,6 +35,9 @@ class QueryResult:
             "row_count": self.row_count,
             "error_message": self.error_message
         }
+        if self.total_count is not None:
+            result["total_count"] = self.total_count
+        return result
 
 
 class QueryExecutor:
@@ -56,31 +60,54 @@ class QueryExecutor:
     def __init__(self, pool: Optional[ConnectionPool] = None):
         self.pool = pool or get_database_manager().get_pool()
     
+    # CTE别名集合，用于排除表名检查
+    CTE_KEYWORDS = {'SELECT', 'WITH', 'AS', 'WHERE', 'AND', 'OR', 'NOT', 'NULL',
+                    'ORDER', 'BY', 'GROUP', 'HAVING', 'LIMIT', 'OFFSET',
+                    'ON', 'IN', 'IS', 'LIKE', 'BETWEEN', 'EXISTS', 'CASE',
+                    'WHEN', 'THEN', 'ELSE', 'END', 'UNION', 'ALL', 'DISTINCT',
+                    'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'JOIN', 'LEFT',
+                    'RIGHT', 'INNER', 'OUTER', 'CROSS', 'NATURAL', 'FROM',
+                    'INSERT', 'UPDATE', 'DELETE', 'SET', 'VALUES', 'INTO',
+                    'CREATE', 'DROP', 'ALTER', 'TABLE', 'INDEX', 'VIEW',
+                    'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES', 'UNIQUE',
+                    'DEFAULT', 'CHECK', 'CONSTRAINT', 'IF', 'NOT'}
+
     def validate_sql(self, sql: str) -> Tuple[bool, str]:
-        """
-        验证SQL安全性
-        
-        Returns:
-            (是否安全, 错误信息)
-        """
         sql_upper = sql.upper().strip()
-
-        # 检查危险操作
+    
+        # Check dangerous operations using word boundary regex
         for keyword in self.DANGEROUS_KEYWORDS:
-            if keyword in sql_upper:
+            pattern = r'\b' + keyword + r'\b'
+            if re.search(pattern, sql_upper):
                 return False, f"检测到危险操作: {keyword}"
-
-        # 只允许SELECT语句和WITH开头的CTE查询
+    
+        # Only allow SELECT and WITH (CTE) queries
         if not (sql_upper.startswith('SELECT') or sql_upper.startswith('WITH')):
             return False, "只允许执行SELECT查询"
-
-        # 检查表名是否在允许列表中（大小写不敏感）
+    
+        # Extract CTE aliases to exclude from table validation
+        cte_names = set()
+        # Handle WITH [RECURSIVE] name AS (...) and WITH [RECURSIVE] name1 AS (...), name2 AS (...)
+        cte_pattern = re.compile(r'\bWITH\s+(?:RECURSIVE\s+)?(\w+)\s+AS\b', re.IGNORECASE)
+        for match in cte_pattern.finditer(sql_upper):
+            cte_names.add(match.group(1).lower())
+        # Also handle subsequent CTEs: , name AS (...)
+        multi_cte = re.compile(r',\s*(\w+)\s+AS\b', re.IGNORECASE)
+        for match in multi_cte.finditer(sql_upper):
+            cte_names.add(match.group(1).lower())
+    
+        # Check table names in allowed list (excluding CTE aliases and SQL keywords)
         table_pattern = re.compile(r'(?:FROM|JOIN)\s+(\w+)', re.IGNORECASE)
         found_tables = set(table_pattern.findall(sql_upper))
         for table in found_tables:
-            if table.lower() not in self.ALLOWED_TABLES:
+            table_lower = table.lower()
+            if table_lower in cte_names:
+                continue
+            if table_lower in self.CTE_KEYWORDS:
+                continue
+            if table_lower not in self.ALLOWED_TABLES:
                 return False, f"不允许访问的表: {table}"
-
+    
         return True, ""
     
     def execute(
@@ -159,7 +186,10 @@ class QueryExecutor:
         page_size: int = 100
     ) -> QueryResult:
         """分页执行查询"""
-        # 检查SQL是否已包含LIMIT，避免双重LIMIT
+        # Clamp page_size to reasonable bounds
+        page_size = max(1, min(page_size, 10000))
+        page = max(1, page)
+    
         sql_upper = sql.upper()
         if "ORDER BY" in sql_upper:
             has_limit = "LIMIT" in sql_upper.split("ORDER BY")[-1]
@@ -167,19 +197,20 @@ class QueryExecutor:
             has_limit = "LIMIT" in sql_upper
 
         if not has_limit:
-            paginated_sql = f"{sql} LIMIT {page_size} OFFSET {(page - 1) * page_size}"
+            paginated_sql = f"{sql} LIMIT ? OFFSET ?"
+            paginated_params = parameters + (page_size, (page - 1) * page_size)
         else:
             paginated_sql = sql
-        
-        result = self.execute(paginated_sql, parameters)
-        
-        # 获取总数（不传递原始parameters，因为count_sql是独立构造的）
+            paginated_params = parameters
+    
+        result = self.execute(paginated_sql, paginated_params)
+    
         if result.success:
             count_sql = f"SELECT COUNT(*) as total FROM ({sql}) as subquery"
-            count_result = self.execute(count_sql, validate=False)
+            count_result = self.execute(count_sql, parameters, validate=False)
             if count_result.success and count_result.data:
-                result.row_count = count_result.data[0].get("total", 0)
-        
+                result.total_count = count_result.data[0].get("total", 0)
+    
         return result
     
     def search_entities(

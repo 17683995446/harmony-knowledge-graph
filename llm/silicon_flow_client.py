@@ -4,6 +4,7 @@ Silicon Flow Client - 硅基流动API客户端
 """
 
 import json
+import asyncio
 import httpx
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
@@ -57,7 +58,8 @@ class SiliconFlowClient:
         self.timeout = timeout
         
         if not self.api_key:
-            raise ValueError("API密钥不能为空，请设置SILICON_FLOW_API_KEY")
+            logger.error("API密钥未配置，请设置SILICON_FLOW_API_KEY环境变量")
+            raise ValueError("API密钥未配置，请检查环境变量SILICON_FLOW_API_KEY")
         
         self.client = httpx.AsyncClient(
             base_url=self.base_url,
@@ -65,7 +67,12 @@ class SiliconFlowClient:
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json"
             },
-            timeout=timeout
+            timeout=httpx.Timeout(
+                connect=10.0,
+                read=timeout,
+                write=30.0,
+                pool=10.0
+            )
         )
         
         logger.info(f"初始化硅基流动客户端，模型: {self.model}")
@@ -75,7 +82,8 @@ class SiliconFlowClient:
         messages: List[Dict[str, str]],
         temperature: float = 0.1,
         max_tokens: int = 2000,
-        stream: bool = False
+        stream: bool = False,
+        max_retries: int = 3
     ) -> ChatCompletion:
         """
         聊天完成
@@ -85,6 +93,7 @@ class SiliconFlowClient:
             temperature: 温度参数
             max_tokens: 最大token数
             stream: 是否流式输出
+            max_retries: 最大重试次数
             
         Returns:
             ChatCompletion: 完成结果
@@ -96,32 +105,60 @@ class SiliconFlowClient:
             "max_tokens": max_tokens,
             "stream": stream
         }
-        
-        try:
-            response = await self.client.post(
-                "/chat/completions",
-                json=payload
-            )
-            response.raise_for_status()
-            
-            data = response.json()
-            
-            if not data.get("choices"):
-                raise ValueError("API返回空结果（可能触发内容过滤）")
-            choice = data["choices"][0]
-            return ChatCompletion(
-                content=choice["message"]["content"],
-                model=data["model"],
-                usage=data.get("usage", {}),
-                finish_reason=choice.get("finish_reason", "")
-            )
-            
-        except httpx.HTTPStatusError as e:
-            logger.error(f"API请求失败: {e.response.status_code} - {e.response.text}")
-            raise
-        except Exception as e:
-            logger.error(f"API调用失败: {e}")
-            raise
+    
+        last_error = None
+        for attempt in range(max_retries):
+            try:
+                response = await self.client.post(
+                    "/chat/completions",
+                    json=payload
+                )
+                
+                # Retry on transient errors
+                if response.status_code in (429, 500, 502, 503) and attempt < max_retries - 1:
+                    wait_time = 2 ** attempt  # exponential backoff
+                    logger.warning(f"API返回 {response.status_code}，{wait_time}秒后重试 (第{attempt + 1}次)")
+                    await asyncio.sleep(wait_time)
+                    continue
+                
+                response.raise_for_status()
+                
+                if stream:
+                    # For streaming, return the raw response
+                    return ChatCompletion(
+                        content=response.text,
+                        model=self.model,
+                        usage={},
+                        finish_reason="stream"
+                    )
+                
+                data = response.json()
+                
+                if not data.get("choices"):
+                    raise ValueError("API返回空结果（可能触发内容过滤）")
+                choice = data["choices"][0]
+                return ChatCompletion(
+                    content=choice["message"]["content"],
+                    model=data["model"],
+                    usage=data.get("usage", {}),
+                    finish_reason=choice.get("finish_reason", "")
+                )
+                    
+            except httpx.HTTPStatusError as e:
+                last_error = e
+                if e.response.status_code in (429, 500, 502, 503) and attempt < max_retries - 1:
+                    wait_time = 2 ** attempt
+                    logger.warning(f"API请求失败 {e.response.status_code}，{wait_time}秒后重试")
+                    await asyncio.sleep(wait_time)
+                    continue
+                logger.error(f"API请求失败: {e.response.status_code} - {e.response.text}")
+                raise
+            except Exception as e:
+                last_error = e
+                logger.error(f"API调用失败: {e}")
+                raise
+    
+        raise last_error  # type: ignore
 
     async def generate_sql(
         self,
@@ -190,39 +227,47 @@ class SiliconFlowClient:
             prompt += "\n示例:\n"
             for i, example in enumerate(examples, 1):
                 prompt += f"\n示例{i}:\n"
-                prompt += f"问题: {example['question']}\n"
-                prompt += f"SQL: {example['sql']}\n"
+                prompt += f"问题: {example.get('question', '')}\n"
+                prompt += f"SQL: {example.get('sql', '')}\n"
         
         return prompt
     
     def _extract_sql(self, content: str) -> str:
-        """从响应中提取SQL"""
-        # 尝试提取代码块
-        if "```sql" in content:
-            start = content.find("```sql") + 6
-            end = content.find("```", start)
-            if end == -1:
-                end = len(content)
-            return content[start:end].strip()
-        elif "```" in content:
-            start = content.find("```") + 3
-            end = content.find("```", start)
-            if end == -1:
-                end = len(content)
-            return content[start:end].strip()
-        
-        # 清理内容
-        sql = content.strip()
-        
-        # 移除可能的解释文字
-        lines = sql.split('\n')
+        """从响应中提取SQL，支持多种LLM输出格式"""
+        content = content.strip()
+    
+        # Try to extract from code block (case-insensitive)
+        import re
+        # Match ```sql ... ``` or ```SQL ... ``` or ``` ... ```
+        code_block_pattern = re.compile(r'```(?:sql)?\s*\n?(.*?)```', re.IGNORECASE | re.DOTALL)
+        match = code_block_pattern.search(content)
+        if match:
+            sql = match.group(1).strip()
+            if sql:
+                return sql
+    
+        # If no code block, try to find SELECT/WITH statement
+        sql_pattern = re.compile(r'(?:SELECT|WITH)\s+.*?(?:;|$)', re.IGNORECASE | re.DOTALL)
+        match = sql_pattern.search(content)
+        if match:
+            sql = match.group(0).strip()
+            # Remove trailing semicolon
+            if sql.endswith(';'):
+                sql = sql[:-1].strip()
+            return sql
+    
+        # Fallback: clean up the content
+        lines = content.split('\n')
         sql_lines = []
         for line in lines:
             line = line.strip()
             if line and not line.startswith('--') and not line.startswith('//'):
                 sql_lines.append(line)
-        
-        return ' '.join(sql_lines)
+    
+        result = ' '.join(sql_lines)
+        if result.endswith(';'):
+            result = result[:-1].strip()
+        return result
     
     async def close(self) -> None:
         """关闭客户端"""

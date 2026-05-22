@@ -10,7 +10,7 @@ import threading
 from typing import List, Dict, Optional, Any
 from concurrent.futures import ThreadPoolExecutor
 from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from database.query_executor import QueryExecutor, QueryResult
 from database.entity_repository import EntityRepository
@@ -60,13 +60,16 @@ def shutdown_thread_pool() -> None:
 # 扫描状态锁，防止并发启动扫描
 _scan_lock = threading.Lock()
 
+# SQL生成器锁，防止并发创建实例
+_generator_lock = threading.Lock()
+
 # Pydantic模型
 class NaturalLanguageQuery(BaseModel):
-    question: str
+    question: str = Field(..., max_length=2000, description="自然语言问题")
     use_cache: bool = True
 
 class SQLQuery(BaseModel):
-    sql: str
+    sql: str = Field(..., max_length=10000, description="SQL查询语句")
     parameters: List[Any] = []
 
 class ScanRequest(BaseModel):
@@ -84,11 +87,12 @@ _llm_client: Optional[SiliconFlowClient] = None
 
 
 def get_sql_generator() -> SQLGenerator:
-    """获取SQL生成器实例（同步创建，避免async资源泄漏）"""
+    """获取SQL生成器实例（线程安全）"""
     global _sql_generator, _llm_client
-    if _sql_generator is None:
-        _llm_client = SiliconFlowClient()
-        _sql_generator = SQLGenerator(llm_client=_llm_client)
+    with _generator_lock:
+        if _sql_generator is None:
+            _llm_client = SiliconFlowClient()
+            _sql_generator = SQLGenerator(llm_client=_llm_client)
     return _sql_generator
 
 
@@ -110,8 +114,13 @@ async def query_natural_language(query: NaturalLanguageQuery) -> Dict:
         
         sql = sql_result["sql"]
         
-        # 执行SQL
+        # 验证AI生成的SQL安全性
         executor = QueryExecutor()
+        is_safe, error_msg = executor.validate_sql(sql)
+        if not is_safe:
+            raise HTTPException(status_code=400, detail=f"AI生成的SQL不安全: {error_msg}")
+
+        # 执行SQL
         query_result = executor.execute(sql)
         
         return {
@@ -130,12 +139,15 @@ async def query_natural_language(query: NaturalLanguageQuery) -> Dict:
 
 @api_router.post("/query/sql")
 async def query_sql(query: SQLQuery) -> Dict:
-    """
-    直接执行SQL查询
-    """
+    """直接执行SQL查询（限制最大返回10000行）"""
     try:
         executor = QueryExecutor()
-        result = executor.execute(query.sql, tuple(query.parameters))
+        # Add LIMIT if not present to prevent resource exhaustion
+        sql = query.sql.strip()
+        sql_upper = sql.upper()
+        if "LIMIT" not in sql_upper:
+            sql = f"{sql} LIMIT 10000"
+        result = executor.execute(sql, tuple(query.parameters))
         return result.to_dict()
     except Exception as e:
         logger.error(f"SQL查询失败: {e}")
@@ -172,7 +184,7 @@ async def get_common_queries() -> List[Dict]:
 async def search_entities(
     q: str = Query(..., description="搜索关键词"),
     type: Optional[str] = Query(None, description="实体类型"),
-    limit: int = Query(100, description="返回数量限制")
+    limit: int = Query(100, ge=1, le=10000, description="返回数量限制")
 ) -> Dict:
     """根据名称搜索代码实体"""
     try:
@@ -219,7 +231,7 @@ async def get_entity_calls(entity_id: int) -> Dict:
 @api_router.get("/files")
 async def get_files(
     path: Optional[str] = Query(None, description="文件路径过滤"),
-    limit: int = Query(100, description="返回数量限制")
+    limit: int = Query(100, ge=1, le=10000, description="返回数量限制")
 ) -> Dict:
     """获取项目中的文件列表"""
     try:
@@ -314,7 +326,7 @@ async def get_complex_methods(min_complexity: int = Query(10, description="最�
 @api_router.get("/graph/dependency")
 async def get_dependency_graph(
     entity_id: Optional[int] = Query(None, description="中心实体ID"),
-    depth: int = Query(2, description="遍历深度")
+    depth: int = Query(2, ge=1, le=10, description="遍历深度")
 ) -> Dict:
     """获取代码实体的依赖关系图"""
     try:
@@ -379,7 +391,7 @@ async def get_inheritance_graph(
 @api_router.get("/graph/call")
 async def get_call_graph(
     entity_id: Optional[int] = Query(None, description="中心实体ID"),
-    depth: int = Query(2, description="遍历深度")
+    depth: int = Query(2, ge=1, le=10, description="遍历深度")
 ) -> Dict:
     """获取方法调用关系图"""
     try:
@@ -451,6 +463,10 @@ async def start_scan(
     
     if scan_status["is_scanning"]:
         raise HTTPException(status_code=409, detail="扫描已在进行中")
+    
+    import os
+    if not os.path.isdir(request.project_path):
+        raise HTTPException(status_code=400, detail=f"项目路径不存在: {request.project_path}")
     
     with _scan_lock:
         if scan_status["is_scanning"]:
@@ -529,11 +545,15 @@ def perform_scan(project_path: str, incremental: bool) -> None:
         scan_status["error"] = str(e)
     finally:
         scan_status["is_scanning"] = False
+        if scan_status["progress"] < 1.0:
+            scan_status["progress"] = 0.0
 
 
 @api_router.post("/database/reset")
-async def reset_database() -> Dict:
+async def reset_database(confirm: bool = Query(False, description="确认重置（必须为true）")) -> Dict:
     """清空并重建数据库"""
+    if not confirm:
+        raise HTTPException(status_code=400, detail="请添加 ?confirm=true 参数确认重置操作")
     try:
         config = get_configuration()
         schema_manager = SchemaManager(config.database_path)
@@ -562,6 +582,5 @@ async def get_config() -> Dict:
     return {
         "model": config.silicon_flow_model,
         "max_workers": config.parser_max_workers,
-        "database_path": config.database_path,
         "incremental_update": config.incremental_update
     }

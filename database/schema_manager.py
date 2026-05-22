@@ -68,10 +68,10 @@ class DatabaseSchema:
             name="entities",
             columns=[
                 ("id", "INTEGER PRIMARY KEY"),
-                ("name_id", "INTEGER NOT NULL"),  # 引用names表
-                ("type_id", "INTEGER NOT NULL"),  # 引用entity_types表
-                ("file_id", "INTEGER NOT NULL"),  # 引用files表
-                ("parent_id", "INTEGER"),  # 自引用，父实体
+                ("name_id", "INTEGER NOT NULL REFERENCES names(id)"),
+                ("type_id", "INTEGER NOT NULL REFERENCES entity_types(id)"),
+                ("file_id", "INTEGER NOT NULL REFERENCES files(id)"),
+                ("parent_id", "INTEGER REFERENCES entities(id)"),
                 ("line_start", "INTEGER"),
                 ("line_end", "INTEGER"),
                 ("column_start", "INTEGER"),
@@ -114,8 +114,8 @@ class DatabaseSchema:
         TableSchema(
             name="entity_type_refs",
             columns=[
-                ("entity_id", "INTEGER NOT NULL"),
-                ("type_name_id", "INTEGER NOT NULL"),
+                ("entity_id", "INTEGER NOT NULL REFERENCES entities(id)"),
+                ("type_name_id", "INTEGER NOT NULL REFERENCES type_names(id)"),
             ],
             indexes=[
                 ("idx_entity_type_refs_entity", ["entity_id"]),
@@ -129,9 +129,9 @@ class DatabaseSchema:
             name="method_params",
             columns=[
                 ("id", "INTEGER PRIMARY KEY"),
-                ("method_id", "INTEGER NOT NULL"),  # 引用entities表
-                ("name_id", "INTEGER NOT NULL"),  # 引用names表
-                ("type_name_id", "INTEGER"),  # 引用type_names表
+                ("method_id", "INTEGER NOT NULL REFERENCES entities(id)"),
+                ("name_id", "INTEGER NOT NULL REFERENCES names(id)"),
+                ("type_name_id", "INTEGER REFERENCES type_names(id)"),
                 ("position", "INTEGER"),
                 ("default_value", "TEXT"),
             ],
@@ -144,8 +144,8 @@ class DatabaseSchema:
         TableSchema(
             name="call_relations",
             columns=[
-                ("caller_id", "INTEGER NOT NULL"),  # 调用者
-                ("callee_id", "INTEGER NOT NULL"),  # 被调用者
+                ("caller_id", "INTEGER NOT NULL REFERENCES entities(id)"),
+                ("callee_id", "INTEGER NOT NULL REFERENCES entities(id)"),
                 ("call_count", "INTEGER DEFAULT 1"),
             ],
             indexes=[
@@ -159,8 +159,8 @@ class DatabaseSchema:
         TableSchema(
             name="inheritance_relations",
             columns=[
-                ("child_id", "INTEGER NOT NULL"),  # 子类
-                ("parent_id", "INTEGER NOT NULL"),  # 父类
+                ("child_id", "INTEGER NOT NULL REFERENCES entities(id)"),
+                ("parent_id", "INTEGER NOT NULL REFERENCES entities(id)"),
                 ("relation_type", "INTEGER"),  # 1=extends, 2=implements
             ],
             indexes=[
@@ -174,8 +174,8 @@ class DatabaseSchema:
         TableSchema(
             name="component_relations",
             columns=[
-                ("parent_id", "INTEGER NOT NULL"),
-                ("child_id", "INTEGER NOT NULL"),
+                ("parent_id", "INTEGER NOT NULL REFERENCES entities(id)"),
+                ("child_id", "INTEGER NOT NULL REFERENCES entities(id)"),
                 ("relation_type", "INTEGER"),  # 1=contains, 2=renders
             ],
             indexes=[
@@ -189,11 +189,11 @@ class DatabaseSchema:
         TableSchema(
             name="import_relations",
             columns=[
-                ("file_id", "INTEGER NOT NULL"),
-                ("imported_file_id", "INTEGER"),
-                ("imported_name_id", "INTEGER"),  # 引用的names表
+                ("file_id", "INTEGER NOT NULL REFERENCES files(id)"),
+                ("imported_file_id", "INTEGER REFERENCES files(id)"),
+                ("imported_name_id", "INTEGER REFERENCES names(id)"),
                 ("is_default", "INTEGER"),  # 0/1
-                ("alias_name_id", "INTEGER"),  # 别名
+                ("alias_name_id", "INTEGER REFERENCES names(id)"),
             ],
             indexes=[
                 ("idx_imports_file", ["file_id"]),
@@ -206,8 +206,8 @@ class DatabaseSchema:
             name="decorators",
             columns=[
                 ("id", "INTEGER PRIMARY KEY"),
-                ("entity_id", "INTEGER NOT NULL"),
-                ("name_id", "INTEGER NOT NULL"),
+                ("entity_id", "INTEGER NOT NULL REFERENCES entities(id)"),
+                ("name_id", "INTEGER NOT NULL REFERENCES names(id)"),
                 ("arguments", "TEXT"),  # JSON格式
             ],
             indexes=[
@@ -219,7 +219,7 @@ class DatabaseSchema:
         TableSchema(
             name="code_metrics",
             columns=[
-                ("file_id", "INTEGER PRIMARY KEY"),
+                ("file_id", "INTEGER PRIMARY KEY REFERENCES files(id)"),
                 ("total_lines", "INTEGER"),
                 ("code_lines", "INTEGER"),
                 ("comment_lines", "INTEGER"),

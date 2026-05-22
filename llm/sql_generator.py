@@ -142,6 +142,31 @@ class SQLGenerator:
         
         return schema
     
+    def refresh_schema(self) -> None:
+        """从实际数据库刷新模式信息"""
+        try:
+            from database.connection_pool import get_database_manager
+            db = get_database_manager()
+            
+            # Get actual table info
+            tables = db.fetch_all(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+            )
+            
+            new_tables = {}
+            for table_row in tables:
+                table_name = table_row["name"]
+                columns = db.fetch_all(f"PRAGMA table_info({table_name})")
+                new_tables[table_name] = {
+                    col["name"]: col["type"] for col in columns
+                }
+            
+            if new_tables:
+                self.schema_context.tables = new_tables
+                logger.info(f"Schema refreshed: {len(new_tables)} tables")
+        except Exception as e:
+            logger.warning(f"Failed to refresh schema: {e}")
+
     async def generate_sql(self, natural_language: str) -> Dict[str, Any]:
         """
         生成SQL查询

@@ -280,6 +280,31 @@ class PipelineManager:
                     
                     # 删除旧实体
                     trace_line(f"Deleting old entities for file_id={file_id}", "debug")
+                    # Delete old related records for this file's entities
+                    conn.execute(
+                        "DELETE FROM call_relations WHERE caller_id IN (SELECT id FROM entities WHERE file_id = ?)",
+                        (file_id,)
+                    )
+                    conn.execute(
+                        "DELETE FROM call_relations WHERE callee_id IN (SELECT id FROM entities WHERE file_id = ?)",
+                        (file_id,)
+                    )
+                    conn.execute(
+                        "DELETE FROM inheritance_relations WHERE child_id IN (SELECT id FROM entities WHERE file_id = ?)",
+                        (file_id,)
+                    )
+                    conn.execute(
+                        "DELETE FROM component_relations WHERE parent_id IN (SELECT id FROM entities WHERE file_id = ?)",
+                        (file_id,)
+                    )
+                    conn.execute(
+                        "DELETE FROM component_relations WHERE child_id IN (SELECT id FROM entities WHERE file_id = ?)",
+                        (file_id,)
+                    )
+                    conn.execute(
+                        "DELETE FROM entity_type_refs WHERE entity_id IN (SELECT id FROM entities WHERE file_id = ?)",
+                        (file_id,)
+                    )
                     conn.execute(
                         "DELETE FROM method_params WHERE method_id IN (SELECT id FROM entities WHERE file_id = ?)",
                         (file_id,)
@@ -358,7 +383,7 @@ class PipelineManager:
 
         # 构建名称 -> 实体ID 的查找字典
         trace_line("Building name_to_entity_id mapping", "debug")
-        name_to_entity_id: Dict[str, int] = {}
+        name_to_entity_ids: Dict[str, List[int]] = {}
         entity_rows = db_manager.fetch_all(
             """
             SELECT e.id, n.name
@@ -367,8 +392,11 @@ class PipelineManager:
             """
         )
         for row in entity_rows:
-            name_to_entity_id[row["name"]] = row["id"]
-        trace_line(f"name_to_entity_id: {len(name_to_entity_id)} entries", "debug")
+            name = row["name"]
+            if name not in name_to_entity_ids:
+                name_to_entity_ids[name] = []
+            name_to_entity_ids[name].append(row["id"])
+        trace_line(f"name_to_entity_ids: {len(name_to_entity_ids)} entries", "debug")
 
         # 构建文件路径 -> 文件ID 的查找字典
         trace_line("Building path_to_file_id mapping", "debug")
@@ -394,17 +422,22 @@ class PipelineManager:
             trace_line(f"Processing relations for: {relative_path}", "debug")
 
             for entity in result.entities:
-                entity_id = name_to_entity_id.get(entity.name)
+                entity_id = name_to_entity_ids.get(entity.name)
                 if not entity_id:
                     trace_line(f"Entity not found in mapping: {entity.name}", "debug")
                     continue
+                # Use the first ID for the entity (best effort)
+                if isinstance(entity_id, list):
+                    entity_id = entity_id[0]
 
                 # 1. 收集调用关系
                 if entity.calls:
                     trace_line(f"Entity {entity.name} has {len(entity.calls)} calls", "debug")
                     for callee_name in entity.calls:
-                        callee_id = name_to_entity_id.get(callee_name)
+                        callee_id = name_to_entity_ids.get(callee_name)
                         if callee_id:
+                            if isinstance(callee_id, list):
+                                callee_id = callee_id[0]
                             call_relations_batch.append((entity_id, callee_id))
                             trace_line(f"Added call relation: {entity.name} -> {callee_name}", "debug")
                         else:
@@ -413,8 +446,10 @@ class PipelineManager:
                 # 2. 收集继承关系 - extends
                 if entity.extends:
                     trace_line(f"Entity {entity.name} extends {entity.extends}", "debug")
-                    parent_id = name_to_entity_id.get(entity.extends)
+                    parent_id = name_to_entity_ids.get(entity.extends)
                     if parent_id:
+                        if isinstance(parent_id, list):
+                            parent_id = parent_id[0]
                         inheritance_batch.append((entity_id, parent_id, 1))
                         total_relations += 1
                         trace_line(f"Added extends relation: {entity.name} -> {entity.extends}", "debug")
@@ -425,8 +460,10 @@ class PipelineManager:
                 if entity.implements:
                     trace_line(f"Entity {entity.name} implements {entity.implements}", "debug")
                     for interface_name in entity.implements:
-                        parent_id = name_to_entity_id.get(interface_name)
+                        parent_id = name_to_entity_ids.get(interface_name)
                         if parent_id:
+                            if isinstance(parent_id, list):
+                                parent_id = parent_id[0]
                             inheritance_batch.append((entity_id, parent_id, 2))
                             total_relations += 1
                             trace_line(f"Added implements relation: {entity.name} -> {interface_name}", "debug")
@@ -451,9 +488,11 @@ class PipelineManager:
                         import_batch.append((file_id, imported_file_id, namespace, 0))
                         total_relations += 1
 
-                    for name in imp.get("named", []):
-                        import_batch.append((file_id, imported_file_id, name, 0))
-                        total_relations += 1
+                    named_imports = imp.get("named") or []
+                    for name in named_imports:
+                        if name:
+                            import_batch.append((file_id, imported_file_id, name, 0))
+                            total_relations += 1
 
         # 在单个事务中写入所有关系
         with db_manager.get_pool().connection() as conn:
@@ -542,9 +581,9 @@ class PipelineManager:
         # 清理AST分析器状态
         if hasattr(self, 'ast_analyzer') and self.ast_analyzer:
             trace_line("Resetting AST analyzer state...", "debug")
-            # ASTAnalyzer没有显式关闭方法，但重置状态有助于GC
             if hasattr(self.ast_analyzer, 'dependency_graph'):
-                self.ast_analyzer.dependency_graph.clear()
+                self.ast_analyzer.dependency_graph.nodes.clear()
+                self.ast_analyzer.dependency_graph.edges.clear()
             if hasattr(self.ast_analyzer, 'entity_index'):
                 self.ast_analyzer.entity_index.clear()
             self.ast_analyzer = None

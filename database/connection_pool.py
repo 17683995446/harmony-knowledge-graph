@@ -51,10 +51,6 @@ class ConnectionPool:
     
     def get_connection(self) -> sqlite3.Connection:
         """获取连接"""
-        # 检查线程本地存储
-        if hasattr(self._local, 'connection') and self._local.connection:
-            return self._local.connection
-        
         try:
             # 尝试从池中获取
             conn = self._pool.get(block=False)
@@ -124,6 +120,14 @@ class ConnectionPool:
     
     def close_all(self) -> None:
         """关闭所有连接"""
+        # Close thread-local connections
+        if hasattr(self._local, 'connection') and self._local.connection:
+            try:
+                self._local.connection.close()
+            except Exception:
+                pass
+            self._local.connection = None
+        
         while not self._pool.empty():
             try:
                 conn = self._pool.get(block=False)

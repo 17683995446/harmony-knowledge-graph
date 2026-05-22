@@ -10,6 +10,8 @@ Harmony Knowledge Graph - 主入口
 
 import asyncio
 import sys
+import signal
+import os
 import click
 from pathlib import Path
 
@@ -36,26 +38,28 @@ def cli(ctx):
 @click.option("--reload", is_flag=True, help="启用热重载（开发模式）")
 def serve(host: str, port: int, reload: bool):
     """启动Web服务"""
-    config = get_configuration()
+    from web.application import app
     
     logger.info(f"启动Web服务: http://{host}:{port}")
     
-    app = create_application()
-    
     uvicorn.run(
         app,
-        host=host if host is not None else config.host,
-        port=port if port is not None else config.port,
+        host=host,
+        port=port,
         reload=reload
     )
 
 
 @cli.command()
 @click.argument("project_path")
-@click.option("--incremental", is_flag=True, default=True, help="增量扫描")
+@click.option("--incremental", is_flag=True, default=False, help="增量扫描")
 @click.option("--workers", default=8, help="工作进程数")
 def scan(project_path: str, incremental: bool, workers: int):
     """扫描项目代码"""
+    import os
+    if not os.path.isdir(project_path):
+        logger.error(f"项目路径不存在: {project_path}")
+        sys.exit(1)
     from core.pipeline_manager import PipelineManager
     
     logger.info(f"开始扫描项目: {project_path}")
@@ -206,7 +210,7 @@ async def _ask_async(question: str):
         
         if not sql_result["success"]:
             logger.error(f"SQL生成失败: {sql_result.get('error')}")
-            return
+            sys.exit(1)
         
         sql = sql_result["sql"]
         print(f"\n生成的SQL:\n{sql}\n")
@@ -228,7 +232,17 @@ async def _ask_async(question: str):
                     print(" | ".join(values))
         else:
             logger.error(f"查询失败: {query_result.error_message}")
+            sys.exit(1)
 
+
+def _signal_handler(signum, frame):
+    """信号处理：优雅关闭"""
+    logger.info(f"收到信号 {signum}，正在关闭...")
+    sys.exit(0)
+
+
+signal.signal(signal.SIGTERM, _signal_handler)
+signal.signal(signal.SIGINT, _signal_handler)
 
 if __name__ == "__main__":
     cli()

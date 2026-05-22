@@ -24,16 +24,27 @@ _jinja_env = Environment(
 
 def _render_template(template_name: str, context: dict) -> str:
     """渲染Jinja2模板"""
+    # 防止路径遍历攻击
+    if ".." in template_name or "/" in template_name or "\\" in template_name:
+        return f"""<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>400 - Bad Request</title></head>
+<body style="font-family: sans-serif; text-align: center; padding: 50px;">
+<h1>400 - Bad Request</h1>
+<p>Invalid template name.</p>
+</body>
+</html>"""
     try:
         template = _jinja_env.get_template(template_name)
         return template.render(**context)
     except TemplateNotFound:
+        import html
         return f"""<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><title>404 - Template Not Found</title></head>
 <body style="font-family: sans-serif; text-align: center; padding: 50px;">
 <h1>404 - Page Not Found</h1>
-<p>The template <strong>{template_name}</strong> does not exist.</p>
+<p>The template <strong>{html.escape(template_name)}</strong> does not exist.</p>
 <p>Please ensure the static files are properly deployed.</p>
 </body>
 </html>"""

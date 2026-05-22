@@ -18,6 +18,7 @@ class EntityRepository:
     def __init__(self, pool: Optional[ConnectionPool] = None):
         self.pool = pool or get_database_manager().get_pool()
         self._name_cache: Dict[str, int] = {}
+        self._name_cache_max = 10000
 
     def _get_or_create_name(self, name: str, conn=None) -> int:
         """获取或创建名称ID，支持传入外部连接避免数据库锁"""
@@ -42,6 +43,9 @@ class EntityRepository:
             name_id = cursor.fetchone()[0]
 
             self._name_cache[name] = name_id
+            # Prevent unbounded cache growth
+            if len(self._name_cache) > self._name_cache_max:
+                self._name_cache.clear()
             if own_conn:
                 conn.commit()
             return name_id
