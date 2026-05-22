@@ -528,3 +528,44 @@ class PipelineManager:
         
         trace_line(f"Path not under project, returning as-is: {file_path}", "warning")
         return file_path.replace(os.sep, '/')
+
+    def close(self) -> None:
+        """清理资源，防止内存泄漏"""
+        trace_line("PipelineManager.close() START", "info")
+        
+        # 清理并行处理器资源
+        if hasattr(self, 'parallel_processor') and self.parallel_processor:
+            trace_line("Shutting down parallel processor...", "debug")
+            self.parallel_processor.shutdown()
+            self.parallel_processor = None
+        
+        # 清理AST分析器状态
+        if hasattr(self, 'ast_analyzer') and self.ast_analyzer:
+            trace_line("Resetting AST analyzer state...", "debug")
+            # ASTAnalyzer没有显式关闭方法，但重置状态有助于GC
+            if hasattr(self.ast_analyzer, 'dependency_graph'):
+                self.ast_analyzer.dependency_graph.clear()
+            if hasattr(self.ast_analyzer, 'entity_index'):
+                self.ast_analyzer.entity_index.clear()
+            self.ast_analyzer = None
+        
+        # 清理仓库引用
+        if hasattr(self, 'entity_repo'):
+            self.entity_repo = None
+        if hasattr(self, 'relation_repo'):
+            self.relation_repo = None
+        
+        # 清理文件扫描器
+        if hasattr(self, 'file_scanner'):
+            self.file_scanner = None
+        
+        trace_line("PipelineManager.close() COMPLETE", "info")
+
+    def __enter__(self):
+        """上下文管理器入口"""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """上下文管理器出口，确保资源被清理"""
+        self.close()
+        return False

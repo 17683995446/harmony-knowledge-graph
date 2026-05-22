@@ -120,3 +120,10 @@ class ParallelProcessor:
                 processing_time=time.time() - start_time, worker_id=worker_id
             )
 
+    def shutdown(self) -> None:
+        """关闭并行处理器，释放资源"""
+        logger.debug("ParallelProcessor shutdown")
+        # 当前实现使用ThreadPoolExecutor作为上下文管理器
+        # 资源在process_items方法结束时自动释放
+        # 此方法用于未来扩展和API一致性
+
