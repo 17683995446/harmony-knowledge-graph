@@ -148,7 +148,11 @@ async def query_sql(query: SQLQuery) -> Dict:
         if "LIMIT" not in sql_upper:
             sql = f"{sql} LIMIT 10000"
         result = executor.execute(sql, tuple(query.parameters))
+        if not result.success:
+            raise HTTPException(status_code=400, detail=result.error_message)
         return result.to_dict()
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"SQL查询失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
