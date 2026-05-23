@@ -355,7 +355,7 @@ class ArkTSParser:
             return_type = match.group(3)
 
             # 跳过关键字
-            if method_name in ('if', 'while', 'for', 'switch', 'catch'):
+            if method_name in self.LANGUAGE_KEYWORDS:
                 continue
 
             location = self._get_location(match.start())
@@ -421,6 +421,8 @@ class ArkTSParser:
         parts = []
         depth_paren = 0  # 圆括号深度
         depth_angle = 0  # 尖括号深度
+        depth_brace = 0  # 花括号深度
+        depth_bracket = 0  # 方括号深度
         current = []
         for ch in params_str:
             if ch == '(':
@@ -431,7 +433,15 @@ class ArkTSParser:
                 depth_angle += 1
             elif ch == '>':
                 depth_angle -= 1
-            elif ch == ',' and depth_paren == 0 and depth_angle == 0:
+            elif ch == '{':
+                depth_brace += 1
+            elif ch == '}':
+                depth_brace -= 1
+            elif ch == '[':
+                depth_bracket += 1
+            elif ch == ']':
+                depth_bracket -= 1
+            elif ch == ',' and depth_paren == 0 and depth_angle == 0 and depth_brace == 0 and depth_bracket == 0:
                 parts.append(''.join(current))
                 current = []
                 continue
@@ -588,8 +598,8 @@ class ArkTSParser:
         search_start = self.line_offsets[line_index]
         
         # 快速查找：从方法行开始向后查找第一个 '{'
-        # 限制搜索范围到方法行后500字符，避免扫描整个文件
-        search_limit = min(search_start + 500, content_len)
+        # 限制搜索范围到方法行后2000字符，避免扫描整个文件
+        search_limit = min(search_start + 2000, content_len)
         brace_pos = content.find('{', search_start, search_limit)
         
         if brace_pos == -1:
@@ -613,7 +623,7 @@ class ArkTSParser:
         body_start = brace_pos + 1
         depth = 1
         pos = brace_pos + 1
-        max_scan = min(pos + 10000, content_len)  # 限制最大扫描10KB
+        max_scan = min(pos + 100000, content_len)  # 限制最大扫描100KB
 
         while pos < max_scan and depth > 0:
             ch = content[pos]

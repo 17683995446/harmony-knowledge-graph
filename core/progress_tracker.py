@@ -34,7 +34,7 @@ class ProgressState:
                 )
                 return 100.0
             return 0.0
-        return (self.completed / self.total) * 100
+        return (min(self.completed, self.total) / self.total) * 100
     
     @property
     def elapsed_time(self) -> float:
@@ -104,11 +104,9 @@ class ProgressTracker:
     def set_stage(self, stage_name: str, stage_info: Optional[Dict[str, Any]] = None) -> None:
         """设置当前阶段"""
         self.state.current_stage = stage_name
+        self.state.stages[stage_name] = {"start_time": time.time()}
         if stage_info:
-            self.state.stages[stage_name] = {
-                "start_time": time.time(),
-                **stage_info
-            }
+            self.state.stages[stage_name].update(stage_info)
         if self._progress and self._task_id is not None:
             self._progress.update(self._task_id, description=stage_name)
     

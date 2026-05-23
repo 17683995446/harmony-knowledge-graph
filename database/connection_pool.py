@@ -57,16 +57,10 @@ class ConnectionPool:
             return conn
         except Empty:
             # 创建新连接
+            conn = self._create_connection()
             with self._lock:
-                if self._connection_count < self.max_connections:
-                    self._connection_count += 1
-                    return self._create_connection()
-            
-            # 等待可用连接
-            try:
-                return self._pool.get(block=True, timeout=self.timeout)
-            except Empty:
-                raise RuntimeError(f"连接池耗尽，无法获取连接 (max={self.max_connections})") from None
+                self._connection_count += 1
+            return conn
     
     def release_connection(self, conn: sqlite3.Connection) -> None:
         """释放连接回池"""

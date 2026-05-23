@@ -27,7 +27,6 @@ def trace_call(func: Callable) -> Callable:
         # 初始化调用栈
         if not hasattr(call_stack, 'depth'):
             call_stack.depth = 0
-            call_stack.chain = []
         
         # 记录调用开始
         call_stack.depth += 1
@@ -62,12 +61,16 @@ def trace_line(message: str, level: str = "debug"):
     """
     行级追踪 - 在代码特定位置打印日志
     """
+    VALID_LEVELS = {'debug', 'info', 'warning', 'error', 'critical'}
+    if level not in VALID_LEVELS:
+        level = 'debug'
+
     thread_id = threading.current_thread().ident
     depth = getattr(call_stack, 'depth', 0)
     indent = "  " * depth
-    
+
     log_func = getattr(logger, level)
-    log_func(f"[LINE][T{thread_id}]{indent}📍  {message}")
+    log_func(f"[LINE][T{thread_id}]{indent}  {message}")
 
 
 def _format_args(args: tuple, kwargs: dict) -> str:

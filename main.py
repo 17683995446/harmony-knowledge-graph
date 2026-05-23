@@ -42,12 +42,10 @@ def serve(host: str, port: int, reload: bool):
     
     logger.info(f"启动Web服务: http://{host}:{port}")
     
-    uvicorn.run(
-        app,
-        host=host,
-        port=port,
-        reload=reload
-    )
+    if reload:
+        uvicorn.run("web.application:app", host=host, port=port, reload=reload)
+    else:
+        uvicorn.run(app, host=host, port=port, reload=reload)
 
 
 @cli.command()
@@ -64,12 +62,11 @@ def scan(project_path: str, incremental: bool, workers: int):
     
     logger.info(f"开始扫描项目: {project_path}")
     
-    pipeline = PipelineManager(
+    with PipelineManager(
         project_path=project_path,
         max_workers=workers
-    )
-    
-    result = pipeline.run_full_pipeline(incremental=incremental)
+    ) as pipeline:
+        result = pipeline.run_full_pipeline(incremental=incremental)
     
     if result.success:
         logger.info("扫描完成!")

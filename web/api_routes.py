@@ -143,7 +143,7 @@ async def query_sql(query: SQLQuery) -> Dict:
     try:
         executor = QueryExecutor()
         # Add LIMIT if not present to prevent resource exhaustion
-        sql = query.sql.strip()
+        sql = query.sql.strip().rstrip(';')
         sql_upper = sql.upper()
         if "LIMIT" not in sql_upper:
             sql = f"{sql} LIMIT 10000"
@@ -236,7 +236,7 @@ async def get_files(
     """获取项目中的文件列表"""
     try:
         executor = QueryExecutor()
-        result = executor.get_file_overview(path)
+        result = executor.get_file_overview(path, limit=limit)
         return result.to_dict()
     except Exception as e:
         logger.error(f"获取文件列表失败: {e}")

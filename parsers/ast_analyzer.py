@@ -180,24 +180,20 @@ class ASTAnalyzer:
         """
         将调用名称字符串解析为实体ID。
 
-        使用模糊匹配策略：
-        - 如果调用是 "obj.method" 形式，提取 "method" 部分进行查找
-        - 如果调用是 "method" 形式，直接用 "method" 查找
-        - 返回第一个匹配的实体ID，如果找不到则返回 None
+        使用匹配策略：
+        - 先尝试完整名称精确匹配（call不带点号时）
+        - 再尝试提取最后一部分进行查找（处理 obj.method 形式）
+        - 当有多个候选时优先选择完全匹配的
         """
-        # 提取调用名称的最后一部分（处理 obj.method 形式）
-        lookup_name = call.split(".")[-1] if "." in call else call
-
-        # 在反向查找表中查找匹配的实体ID
-        candidate_ids = self._name_to_entity_ids.get(lookup_name, [])
-
+        # 先尝试完整名称精确匹配
+        candidate_ids = self._name_to_entity_ids.get(call, [])
         if candidate_ids:
-            # 优先返回同名精确匹配；如果有多个候选，返回第一个
             return candidate_ids[0]
 
-        # 如果点分形式没匹配到，尝试完整调用名
+        # 再提取调用名称的最后一部分（处理 obj.method 形式）
         if "." in call:
-            candidate_ids = self._name_to_entity_ids.get(call, [])
+            lookup_name = call.split(".")[-1]
+            candidate_ids = self._name_to_entity_ids.get(lookup_name, [])
             if candidate_ids:
                 return candidate_ids[0]
 
@@ -289,19 +285,38 @@ class ASTAnalyzer:
                 source = imp.get("source", "")
                 if source.startswith("."):
                     # 相对导入，建立文件间依赖
+                    # 确保导入目标节点存在
+                    target_id = f"import:{source}"
+                    if target_id not in self.dependency_graph.nodes:
+                        self.dependency_graph.add_node(
+                            target_id, "import", {"name": source}
+                        )
                     self.dependency_graph.add_edge(
                         file_id,
-                        f"import:{source}",
+                        target_id,
                         "imports",
-                        imp
+                        {"source": source}
                     )
+
+    def _read_file_safe(self, file_path: str) -> Optional[str]:
+        """安全读取文件，支持多种编码"""
+        encodings = ['utf-8', 'utf-8-sig', 'gbk', 'gb2312', 'latin-1']
+        for enc in encodings:
+            try:
+                with open(file_path, 'r', encoding=enc) as f:
+                    return f.read()
+            except (UnicodeDecodeError, UnicodeError):
+                continue
+        return None
 
     def _calculate_metrics(self, parse_results: List[ParseResult]) -> None:
         """计算代码度量指标"""
         for result in parse_results:
             try:
-                with open(result.file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
+                content = self._read_file_safe(result.file_path)
+                if content is None:
+                    logger.warning(f"无法读取文件: {result.file_path}")
+                    continue
                     lines = content.split('\n')
 
                     self.metrics.total_lines += len(lines)
@@ -501,7 +516,6 @@ class ASTAnalyzer:
 
             path.pop()
             rec_stack.remove(node)
-            visited.remove(node)
 
         for node in self.dependency_graph.nodes:
             if node not in visited:

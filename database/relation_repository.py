@@ -52,7 +52,7 @@ class RelationRepository:
     def get_call_graph(self, entity_ids: Optional[List[int]] = None) -> List[Dict]:
         """获取调用图"""
         with self.pool.connection() as conn:
-            if entity_ids:
+            if entity_ids is not None:
                 placeholders = ','.join('?' * len(entity_ids))
                 cursor = conn.execute(
                     f"""

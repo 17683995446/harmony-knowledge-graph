@@ -114,7 +114,7 @@ class SiliconFlowClient:
                     json=payload
                 )
                 
-                # Retry on transient errors
+                # Check status code before raising, to handle retries properly
                 if response.status_code in (429, 500, 502, 503) and attempt < max_retries - 1:
                     wait_time = 2 ** attempt  # exponential backoff
                     logger.warning(f"API返回 {response.status_code}，{wait_time}秒后重试 (第{attempt + 1}次)")
@@ -144,15 +144,6 @@ class SiliconFlowClient:
                     finish_reason=choice.get("finish_reason", "")
                 )
                     
-            except httpx.HTTPStatusError as e:
-                last_error = e
-                if e.response.status_code in (429, 500, 502, 503) and attempt < max_retries - 1:
-                    wait_time = 2 ** attempt
-                    logger.warning(f"API请求失败 {e.response.status_code}，{wait_time}秒后重试")
-                    await asyncio.sleep(wait_time)
-                    continue
-                logger.error(f"API请求失败: {e.response.status_code} - {e.response.text}")
-                raise
             except Exception as e:
                 last_error = e
                 logger.error(f"API调用失败: {e}")

@@ -4,6 +4,7 @@ Logger Manager - 日志管理器
 """
 
 import logging
+import logging.handlers
 import sys
 import threading
 from pathlib import Path
@@ -18,7 +19,6 @@ class LoggerManager:
     
     _instance: Optional["LoggerManager"] = None
     _lock = threading.Lock()
-    _initialized: bool = False
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -35,7 +35,7 @@ class LoggerManager:
         enable_file: bool = True,
         enable_console: bool = True
     ):
-        if self._initialized:
+        if hasattr(self, '_initialized') and self._initialized:
             return
         
         self.name = name
@@ -70,11 +70,17 @@ class LoggerManager:
             console_handler.setLevel(self.level)
             self.logger.addHandler(console_handler)
         
-        # 文件处理器
+        # 文件处理器 - 使用TimedRotatingFileHandler自动轮转，保留7天日志
         if self.enable_file:
             self.log_dir.mkdir(parents=True, exist_ok=True)
-            log_file = self.log_dir / f"{self.name}_{datetime.now():%Y%m%d}.log"
-            file_handler = logging.FileHandler(log_file, encoding="utf-8")
+            log_file = self.log_dir / f"{self.name}.log"
+            file_handler = logging.handlers.TimedRotatingFileHandler(
+                log_file,
+                when="midnight",
+                interval=1,
+                backupCount=7,
+                encoding="utf-8"
+            )
             file_handler.setLevel(self.level)
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)

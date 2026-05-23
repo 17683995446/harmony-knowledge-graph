@@ -297,8 +297,9 @@ class SchemaManager:
                 logger.warning("数据库文件损坏，删除并重新创建")
                 try:
                     Path(self.db_path).unlink()
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.error(f"无法删除损坏的数据库文件: {e}")
+                    raise
 
         with sqlite3.connect(self.db_path) as conn:
             # 启用外键
@@ -383,6 +384,9 @@ class SchemaManager:
 
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
+
+            # 禁用外键约束，避免DROP TABLE时因外键引用失败
+            conn.execute("PRAGMA foreign_keys = OFF")
 
             # 删除所有表（包括FTS5虚拟表）
             # 反向遍历以正确处理外键依赖关系

@@ -84,7 +84,7 @@ class SQLGenerator:
             "files": {
                 "id": "INTEGER PRIMARY KEY",
                 "path": "TEXT",
-                "hash": "BLOB",
+                "hash": "TEXT",
                 "size": "INTEGER",
                 "modified_time": "REAL"
             },

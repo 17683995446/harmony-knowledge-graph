@@ -67,10 +67,7 @@ class QueryExecutor:
                     'WHEN', 'THEN', 'ELSE', 'END', 'UNION', 'ALL', 'DISTINCT',
                     'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'JOIN', 'LEFT',
                     'RIGHT', 'INNER', 'OUTER', 'CROSS', 'NATURAL', 'FROM',
-                    'INSERT', 'UPDATE', 'DELETE', 'SET', 'VALUES', 'INTO',
-                    'CREATE', 'DROP', 'ALTER', 'TABLE', 'INDEX', 'VIEW',
-                    'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES', 'UNIQUE',
-                    'DEFAULT', 'CHECK', 'CONSTRAINT', 'IF', 'NOT'}
+                    'SET', 'INTO', 'VALUES', 'IF'}
 
     def validate_sql(self, sql: str) -> Tuple[bool, str]:
         sql_upper = sql.upper().strip()
@@ -232,10 +229,11 @@ class QueryExecutor:
             JOIN names n ON e.name_id = n.id
             JOIN entity_types et ON e.type_id = et.id
             JOIN files f ON e.file_id = f.id
-            WHERE n.name LIKE ?
+            WHERE n.name LIKE ? ESCAPE '\\'
         """
-        
-        params = [f"%{query}%"]
+
+        escaped_query = query.replace('%', '\\%').replace('_', '\\_')
+        params = [f"%{escaped_query}%"]
         
         if entity_type:
             base_sql += " AND et.name = ?"
@@ -303,7 +301,7 @@ class QueryExecutor:
         """
         return self.execute(sql, (entity_id, depth), validate=False)
     
-    def get_file_overview(self, file_path: Optional[str] = None) -> QueryResult:
+    def get_file_overview(self, file_path: Optional[str] = None, limit: int = 100) -> QueryResult:
         """获取文件概览"""
         if file_path:
             sql = """
@@ -316,8 +314,9 @@ class QueryExecutor:
                 LEFT JOIN entity_types et ON e.type_id = et.id
                 WHERE f.path LIKE ?
                 GROUP BY f.id
+                LIMIT ?
             """
-            return self.execute(sql, (f"%{file_path}%",), validate=False)
+            return self.execute(sql, (f"%{file_path}%", limit), validate=False)
         else:
             sql = """
                 SELECT 
@@ -327,9 +326,9 @@ class QueryExecutor:
                 LEFT JOIN entities e ON f.id = e.file_id
                 GROUP BY f.id
                 ORDER BY f.path
-                LIMIT 100
+                LIMIT ?
             """
-            return self.execute(sql, validate=False)
+            return self.execute(sql, (limit,), validate=False)
     
     def get_project_statistics(self) -> QueryResult:
         """获取项目统计"""

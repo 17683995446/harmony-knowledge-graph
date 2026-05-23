@@ -313,6 +313,10 @@ class PipelineManager:
                         "DELETE FROM decorators WHERE entity_id IN (SELECT id FROM entities WHERE file_id = ?)",
                         (file_id,)
                     )
+                    conn.execute(
+                        "DELETE FROM import_relations WHERE file_id = ?",
+                        (file_id,)
+                    )
                     deleted = conn.execute("DELETE FROM entities WHERE file_id = ?", (file_id,)).rowcount
                     trace_line(f"Deleted {deleted} old entities", "debug")
                     
@@ -332,9 +336,11 @@ class PipelineManager:
                     
                     for name in all_names:
                         if name:
+                            import hashlib
+                            name_hash = int(hashlib.md5(name.encode('utf-8')).hexdigest()[:8], 16)
                             conn.execute(
                                 "INSERT OR IGNORE INTO names (name, hash) VALUES (?, ?)",
-                                (name, 0)
+                                (name, name_hash)
                             )
                     
                     # 插入实体

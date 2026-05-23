@@ -4,6 +4,7 @@ Entity Repository - 实体仓库
 """
 
 import hashlib
+import threading
 from typing import List, Dict, Optional
 
 from database.connection_pool import ConnectionPool, get_database_manager
@@ -19,11 +20,13 @@ class EntityRepository:
         self.pool = pool or get_database_manager().get_pool()
         self._name_cache: Dict[str, int] = {}
         self._name_cache_max = 10000
+        self._cache_lock = threading.Lock()
 
     def _get_or_create_name(self, name: str, conn=None) -> int:
         """获取或创建名称ID，支持传入外部连接避免数据库锁"""
-        if name in self._name_cache:
-            return self._name_cache[name]
+        with self._cache_lock:
+            if name in self._name_cache:
+                return self._name_cache[name]
 
         own_conn = conn is None
         if own_conn:
@@ -42,10 +45,11 @@ class EntityRepository:
             )
             name_id = cursor.fetchone()[0]
 
-            self._name_cache[name] = name_id
-            # Prevent unbounded cache growth
-            if len(self._name_cache) > self._name_cache_max:
-                self._name_cache.clear()
+            with self._cache_lock:
+                self._name_cache[name] = name_id
+                # Prevent unbounded cache growth
+                if len(self._name_cache) > self._name_cache_max:
+                    self._name_cache.clear()
             if own_conn:
                 conn.commit()
             return name_id

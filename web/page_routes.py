@@ -25,7 +25,7 @@ _jinja_env = Environment(
 def _render_template(template_name: str, context: dict) -> str:
     """渲染Jinja2模板"""
     # 防止路径遍历攻击
-    if ".." in template_name or "/" in template_name or "\\" in template_name:
+    if ".." in template_name or "/" in template_name or "\\" in template_name or "\x00" in template_name:
         return f"""<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><title>400 - Bad Request</title></head>
