@@ -168,6 +168,12 @@ class DatabaseManager:
         schema_manager = SchemaManager(self.db_path)
         schema_manager.initialize_database()
     
+    def reset_pool(self) -> None:
+        """重置连接池（数据库损坏重建后调用）"""
+        self.pool.close_all()
+        self.pool = ConnectionPool(self.db_path)
+        logger.info("连接池已重置")
+    
     def get_pool(self) -> ConnectionPool:
         """获取连接池"""
         return self.pool

@@ -297,6 +297,14 @@ class SchemaManager:
                 logger.warning("数据库文件损坏，删除并重新创建")
                 try:
                     Path(self.db_path).unlink()
+                    # 通知连接池重置
+                    try:
+                        from database.connection_pool import get_database_manager
+                        db_manager = get_database_manager()
+                        if hasattr(db_manager, 'reset_pool'):
+                            db_manager.reset_pool()
+                    except Exception:
+                        pass  # 连接池可能还未初始化
                 except Exception as e:
                     logger.error(f"无法删除损坏的数据库文件: {e}")
                     raise

@@ -1,0 +1,902 @@
+2026-05-23 00:20:38 | INFO     | harmony_kg.web_application | FastAPI应用创建完成，静态目录: /workspace/harmony-knowledge-graph/static
+2026-05-23 00:20:38 | INFO     | harmony_kg.schema_manager | 初始化数据库: /workspace/harmony-knowledge-graph/data/knowledge_graph.db
+2026-05-23 00:20:38 | INFO     | harmony_kg.schema_manager | 数据库初始化完成
+2026-05-23 00:20:38 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/test_project
+2026-05-23 00:20:38 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:20:38 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:20:38 | INFO     | harmony_kg.file_scanner | 发现 5 个潜在文件
+2026-05-23 00:20:38 | INFO     | harmony_kg.file_scanner | 扫描完成，共 5 个ArkTS文件
+2026-05-23 00:20:38 | INFO     | harmony_kg.parallel_processor | 开始并行处理 5 个项目
+2026-05-23 00:20:38 | INFO     | harmony_kg.parallel_processor | 处理完成: 5/5 成功
+2026-05-23 00:20:38 | INFO     | harmony_kg.ast_analyzer | 开始分析 5 个文件的解析结果
+2026-05-23 00:20:38 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/test_project
+2026-05-23 00:20:38 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:20:38 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:20:38 | INFO     | harmony_kg.file_scanner | 发现 5 个潜在文件
+2026-05-23 00:20:38 | INFO     | harmony_kg.file_scanner | 扫描完成，共 5 个ArkTS文件
+2026-05-23 00:20:38 | INFO     | harmony_kg.parallel_processor | 开始并行处理 5 个项目
+2026-05-23 00:20:38 | INFO     | harmony_kg.parallel_processor | 处理完成: 5/5 成功
+2026-05-23 00:20:38 | INFO     | harmony_kg.ast_analyzer | 开始分析 5 个文件的解析结果
+2026-05-23 00:21:24 | INFO     | harmony_kg.schema_manager | 初始化数据库: /workspace/harmony-knowledge-graph/data/knowledge_graph.db
+2026-05-23 00:21:24 | INFO     | harmony_kg.schema_manager | 数据库初始化完成
+2026-05-23 00:21:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 8 个工作线程
+2026-05-23 00:21:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:24 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 8 个工作线程
+2026-05-23 00:21:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:25 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 8 个工作线程
+2026-05-23 00:21:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:26 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:27 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:27 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:27 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:27 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:27 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:27 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:27 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:28 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:28 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:29 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:29 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:29 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:29 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:29 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:29 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:29 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:30 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:30 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:30 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:30 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:30 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:30 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:30 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:31 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:31 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:32 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:32 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:32 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:32 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:32 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:32 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:32 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:33 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:33 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:33 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:33 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:33 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:33 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:33 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:34 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:34 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:34 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:34 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:34 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:34 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:34 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:35 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:35 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:36 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:36 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:36 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:36 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:36 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:36 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:36 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:37 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:37 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:37 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:37 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:37 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:37 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:38 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:38 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:38 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:39 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:39 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:39 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:39 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:39 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:39 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:39 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:40 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:40 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:40 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:40 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:40 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:40 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:40 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:40 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:41 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:41 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:42 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:42 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:42 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:42 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:42 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:42 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:42 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:43 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:43 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:43 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:43 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:43 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:43 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:43 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:44 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:44 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:44 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:44 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:44 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:44 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:45 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:45 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:45 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:46 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:46 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:46 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:46 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:46 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:46 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:46 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:47 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:47 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:48 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:48 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:48 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:48 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:48 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:48 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:48 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:49 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:49 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:49 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:49 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:49 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:49 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:49 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:50 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:50 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:50 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:50 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:50 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:50 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:51 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:51 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:51 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:52 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:52 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:52 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:52 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:52 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:52 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:52 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:53 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:53 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:54 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:54 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:54 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:54 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:54 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:54 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:54 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:55 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 00:21:55 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/chaos_mega
+2026-05-23 00:21:55 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 00:21:55 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 00:21:55 | INFO     | harmony_kg.file_scanner | 发现 393 个潜在文件
+2026-05-23 00:21:55 | INFO     | harmony_kg.file_scanner | 扫描完成，共 393 个ArkTS文件
+2026-05-23 00:21:55 | INFO     | harmony_kg.parallel_processor | 开始并行处理 393 个项目
+2026-05-23 00:21:56 | INFO     | harmony_kg.parallel_processor | 处理完成: 393/393 成功
+2026-05-23 00:21:56 | INFO     | harmony_kg.ast_analyzer | 开始分析 393 个文件的解析结果
+2026-05-23 05:08:36 | INFO     | harmony_kg.web_application | FastAPI应用创建完成，静态目录: /workspace/harmony-knowledge-graph/static
+2026-05-23 05:08:36 | INFO     | harmony_kg.schema_manager | 初始化数据库: /workspace/harmony-knowledge-graph/data/knowledge_graph.db
+2026-05-23 05:08:36 | INFO     | harmony_kg.schema_manager | 数据库初始化完成
+2026-05-23 05:08:36 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/api_test_project
+2026-05-23 05:08:36 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 2 个工作线程
+2026-05-23 05:08:36 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:08:36 | INFO     | harmony_kg.file_scanner | 发现 2 个潜在文件
+2026-05-23 05:08:36 | INFO     | harmony_kg.file_scanner | 扫描完成，共 2 个ArkTS文件
+2026-05-23 05:08:36 | INFO     | harmony_kg.parallel_processor | 开始并行处理 2 个项目
+2026-05-23 05:08:36 | INFO     | harmony_kg.parallel_processor | 处理完成: 2/2 成功
+2026-05-23 05:08:36 | INFO     | harmony_kg.ast_analyzer | 开始分析 2 个文件的解析结果
+2026-05-23 05:08:36 | INFO     | harmony_kg.api_routes | 扫描完成: 文件=2, 实体=7, 耗时=0.1s
+2026-05-23 05:08:36 | INFO     | harmony_kg.silicon_flow_client | 初始化硅基流动客户端，模型: Qwen2.5-7B-Instruct
+2026-05-23 05:08:36 | WARNING  | harmony_kg.schema_manager | 重置数据库...
+2026-05-23 05:08:36 | INFO     | harmony_kg.schema_manager | 初始化数据库: /workspace/harmony-knowledge-graph/data/knowledge_graph.db
+2026-05-23 05:08:36 | INFO     | harmony_kg.schema_manager | 数据库初始化完成
+2026-05-23 05:08:36 | INFO     | harmony_kg.schema_manager | 数据库重置完成
+2026-05-23 05:12:48 | INFO     | harmony_kg.schema_manager | 初始化数据库: /workspace/harmony-knowledge-graph/data/knowledge_graph.db
+2026-05-23 05:12:48 | INFO     | harmony_kg.schema_manager | 数据库初始化完成
+2026-05-23 05:12:48 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:48 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:48 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:48 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:48 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:48 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:48 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:49 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:49 | ERROR    | harmony_kg.query_executor | 查询执行失败: SELECT * FORM files, 错误: near "FORM": syntax error
+2026-05-23 05:12:49 | ERROR    | harmony_kg.query_executor | 查询执行失败: SELECT * FROM files WHERE, 错误: incomplete input
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:49 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:49 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:49 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:49 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:49 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:50 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:50 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:50 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:50 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:50 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:50 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:50 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:50 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:51 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:51 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:51 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:51 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:51 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:51 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:52 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:52 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:52 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:52 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:52 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:52 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:52 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:53 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:53 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:53 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:53 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:53 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:53 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:53 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:53 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:54 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:54 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:54 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:54 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/comprehensive_test
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 发现 50 个潜在文件
+2026-05-23 05:12:54 | INFO     | harmony_kg.file_scanner | 扫描完成，共 50 个ArkTS文件
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 开始并行处理 50 个项目
+2026-05-23 05:12:54 | INFO     | harmony_kg.parallel_processor | 处理完成: 50/50 成功
+2026-05-23 05:12:54 | INFO     | harmony_kg.ast_analyzer | 开始分析 50 个文件的解析结果
+2026-05-23 12:09:33 | INFO     | harmony_kg.schema_manager | 初始化数据库: /workspace/harmony-knowledge-graph/data/knowledge_graph.db
+2026-05-23 12:09:33 | INFO     | harmony_kg.schema_manager | 数据库初始化完成
+2026-05-23 12:09:33 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/mega_project
+2026-05-23 12:09:33 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 16 个工作线程
+2026-05-23 12:09:33 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:09:33 | INFO     | harmony_kg.file_scanner | 发现 1100 个潜在文件
+2026-05-23 12:09:33 | INFO     | harmony_kg.file_scanner | 扫描完成，共 1100 个ArkTS文件
+2026-05-23 12:09:33 | INFO     | harmony_kg.parallel_processor | 开始并行处理 1100 个项目
+2026-05-23 12:09:34 | INFO     | harmony_kg.parallel_processor | 处理完成: 1100/1100 成功
+2026-05-23 12:09:36 | INFO     | harmony_kg.ast_analyzer | 开始分析 1100 个文件的解析结果
+2026-05-23 12:11:05 | INFO     | harmony_kg.schema_manager | 初始化数据库: /workspace/harmony-knowledge-graph/data/knowledge_graph.db
+2026-05-23 12:11:05 | INFO     | harmony_kg.schema_manager | 数据库初始化完成
+2026-05-23 12:11:05 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test
+2026-05-23 12:11:05 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 8 个工作线程
+2026-05-23 12:11:05 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:11:05 | INFO     | harmony_kg.file_scanner | 发现 12 个潜在文件
+2026-05-23 12:11:05 | INFO     | harmony_kg.file_scanner | 扫描完成，共 12 个ArkTS文件
+2026-05-23 12:11:05 | INFO     | harmony_kg.parallel_processor | 开始并行处理 12 个项目
+2026-05-23 12:18:15 | INFO     | harmony_kg.schema_manager | 初始化数据库: /workspace/harmony-knowledge-graph/data/knowledge_graph.db
+2026-05-23 12:18:15 | INFO     | harmony_kg.schema_manager | 数据库初始化完成
+2026-05-23 12:18:15 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:15 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:15 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:15 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:15 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:15 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:15 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:15 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:23 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:23 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:23 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:23 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:23 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:23 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:23 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:23 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:24 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:24 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:25 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:25 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:26 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:26 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:27 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:27 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:27 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:27 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:27 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:27 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:27 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:27 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:27 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:27 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 初始化文件扫描器: /data/user/work/boundary_test2
+2026-05-23 12:18:27 | INFO     | harmony_kg.parallel_processor | 初始化并行处理器: 4 个工作线程
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 开始扫描项目文件...
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 发现 7 个潜在文件
+2026-05-23 12:18:27 | INFO     | harmony_kg.file_scanner | 扫描完成，共 7 个ArkTS文件
+2026-05-23 12:18:27 | INFO     | harmony_kg.parallel_processor | 开始并行处理 7 个项目
+2026-05-23 12:18:27 | INFO     | harmony_kg.parallel_processor | 处理完成: 7/7 成功
+2026-05-23 12:18:27 | INFO     | harmony_kg.ast_analyzer | 开始分析 7 个文件的解析结果
