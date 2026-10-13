@@ -23,7 +23,7 @@ services:
       - CACHE_DIR=/app/cache
       - LOG_LEVEL=INFO
       # 硅基流动API配置（请修改为你的API密钥）
-      - SILICON_FLOW_API_KEY=${SILICON_FLOW_API_KEY:-sk-uqelhavcdhfxjzjesdenxpbtqombamjniazzjtbssmdcwdvg}
+      - SILICON_FLOW_API_KEY=${SILICON_FLOW_API_KEY:-REDACTED_API_KEY}
       - SILICON_FLOW_MODEL=${SILICON_FLOW_MODEL:-Qwen2.5-7B-Instruct}
     restart: unless-stopped
     healthcheck:

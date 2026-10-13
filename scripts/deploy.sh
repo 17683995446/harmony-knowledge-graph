@@ -86,7 +86,7 @@ deploy_docker() {
         -v "$(pwd)/data:/app/data" \
         -v "$(pwd)/cache:/app/cache" \
         -v "$(pwd)/logs:/app/logs" \
-        -e SILICON_FLOW_API_KEY="${SILICON_FLOW_API_KEY:-sk-uqelhavcdhfxjzjesdenxpbtqombamjniazzjtbssmdcwdvg}" \
+        -e SILICON_FLOW_API_KEY="${SILICON_FLOW_API_KEY:-REDACTED_API_KEY}" \
         harmony-knowledge-graph:latest
     
     print_success "Docker部署完成!"
